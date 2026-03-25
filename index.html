@@ -346,11 +346,23 @@
     }
     #mobileControls .touch-btn:active{ transform:translateY(1px) scale(0.99) }
     @media (max-width: 520px){
+      #topbar{ flex-wrap:wrap }
+      #hud{ width:100% }
+      #targets{ width:100%; flex:0 0 auto }
       #hud{ top:10px; left:10px; padding:10px 10px }
       .badge{ font-size:15px }
       .chip .label{ font-size:12px }
       .chip .val{ font-size:14px }
       .chip{ min-width:0 }
+      .form-grid input, .form-grid select{ min-height:46px; line-height:1.15 }
+      #breakdownTable{
+        max-width:100%;
+        overflow-x:auto;
+        overflow-y:hidden;
+        -webkit-overflow-scrolling:touch;
+        padding-bottom:8px;
+      }
+      #breakdownTable .tbl{ min-width:560px }
       #toast{
         left:50%;
         right:auto;
