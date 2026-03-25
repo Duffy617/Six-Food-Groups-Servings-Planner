@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Nutrition Portions Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,8 @@
       --brand:#2f3b52;
       --brand2:#3a4a68;
       --danger:#ff4d4f;
+      --sand:#d7c892;
+      --sand2:#b9ad7a;
       --radius:14px;
       --shadow:0 18px 50px rgba(0,0,0,.55);
       --scrollTrack:#121826;
@@ -42,7 +44,7 @@
       -webkit-font-smoothing:antialiased;
     }
     *, *::before, *::after { box-sizing:border-box }
-    canvas { display:block; width:100vw; height:100vh; touch-action:none; -webkit-user-select:none; user-select:none }
+    canvas { display:block; width:100vw; height:100vh; height:100svh; height:100dvh; touch-action:none; -webkit-user-select:none; user-select:none }
     html{ scrollbar-color: var(--scrollThumb) var(--scrollTrack); scrollbar-width: thin }
     *::-webkit-scrollbar{ width:10px; height:10px }
     *::-webkit-scrollbar-track{ background: var(--scrollTrack); border-radius: 8px }
@@ -56,9 +58,9 @@
 
     #topbar{
       position:fixed;
-      top:8px;
-      left:8px;
-      right:8px;
+      top:calc(8px + env(safe-area-inset-top));
+      left:calc(8px + env(safe-area-inset-left));
+      right:calc(8px + env(safe-area-inset-right));
       z-index:10;
       display:flex;
       gap:8px;
@@ -88,12 +90,13 @@
       font-weight:800;
       letter-spacing:.01em;
       font-variant-numeric:tabular-nums;
+      font-size:14px;
     }
     .hint{ color:var(--muted); font-weight:900 }
     #targets{
       position:relative;
-      display:flex;
-      flex-wrap:wrap;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
       gap:6px;
       background:var(--panel);
       backdrop-filter: blur(10px);
@@ -118,8 +121,8 @@
       min-width:0;
     }
     .chip.exceeded{ border-color:rgba(255,77,79,.55); box-shadow:0 0 0 1px rgba(255,77,79,.18) inset }
-    .chip .label{ grid-column:1; grid-row:1; font-size:11px; font-weight:900; color:var(--chip-color,#6b86c4); letter-spacing:.02em; text-transform:uppercase }
-    .chip .val{ grid-column:2; grid-row:1; font-size:12px; font-weight:900; justify-self:end }
+    .chip .label{ grid-column:1; grid-row:1; font-size:12px; font-weight:900; color:var(--chip-color,#6b86c4); letter-spacing:.02em; text-transform:uppercase }
+    .chip .val{ grid-column:2; grid-row:1; font-size:13px; font-weight:900; justify-self:end }
     .chip .bar{ grid-column:1 / -1; grid-row:2; height:6px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.12) }
     .chip .fill{ height:100%; background:linear-gradient(90deg, var(--chip-color,#1e3a8a), rgba(255,255,255,.10)); border-radius:999px }
 
@@ -157,7 +160,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       z-index:20;
-      padding:18px 14px;
+      padding:calc(18px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
     }
     #setup .panel{
       background:linear-gradient(135deg, rgba(16,20,34,.95) 0%, rgba(11,15,26,.96) 100%);
@@ -165,7 +168,7 @@
       border-radius:20px;
       padding:22px 22px;
       width:min(620px, 100%);
-      max-height:calc(100vh - 36px);
+      max-height:calc(100vh - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       overflow:auto;
       box-shadow:var(--shadow);
     }
@@ -183,6 +186,33 @@
       border-radius:12px;
       cursor:pointer;
       user-select:none;
+      font-size:14px;
+    }
+    .radio.energy-mode{
+      background:rgba(215,200,146,.14);
+      border-color:rgba(215,200,146,.28);
+    }
+    .radio.energy-mode.is-checked{
+      background:rgba(215,200,146,.26);
+      border-color:rgba(215,200,146,.46);
+      box-shadow:0 0 0 4px rgba(215,200,146,.10);
+    }
+    .radio.energy-mode input:checked{
+      background:var(--sand);
+      border-color:var(--sand);
+    }
+    .radio.macro-mode{
+      background:rgba(215,200,146,.14);
+      border-color:rgba(215,200,146,.28);
+    }
+    .radio.macro-mode.is-checked{
+      background:rgba(215,200,146,.26);
+      border-color:rgba(215,200,146,.46);
+      box-shadow:0 0 0 4px rgba(215,200,146,.10);
+    }
+    .radio.macro-mode input:checked{
+      background:var(--sand);
+      border-color:var(--sand);
     }
     .radio input{
       -webkit-appearance:none;
@@ -204,7 +234,7 @@
       outline-offset:2px;
     }
     .form-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; text-align:left; margin-top:4px }
-    .form-grid label{ display:flex; flex-direction:column; gap:8px; font-size:13px; font-weight:700; color:rgba(238,242,255,.92) }
+    .form-grid label{ display:flex; flex-direction:column; gap:8px; font-size:14px; font-weight:700; color:rgba(238,242,255,.92) }
     .form-grid input, .form-grid select{
       width:100%;
       font:inherit;
@@ -247,9 +277,9 @@
       border-radius:14px;
       padding:12px 12px;
     }
-    .review .k{ color:rgba(238,242,255,.62); font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase }
+    .review .k{ color:rgba(238,242,255,.62); font-size:13px; font-weight:900; letter-spacing:.06em; text-transform:uppercase }
     .review .v{ font-size:14px; font-weight:900; margin-top:6px }
-    .review pre{ margin:10px 0 0; white-space:pre-wrap; word-break:break-word; font-size:12px; line-height:1.4; color:rgba(238,242,255,.86) }
+    .review pre{ margin:10px 0 0; white-space:pre-wrap; word-break:break-word; font-size:13px; line-height:1.4; color:rgba(238,242,255,.86) }
     .macro-label{
       display:inline-flex;
       align-items:center;
@@ -262,10 +292,10 @@
       background:rgba(255,255,255,.10);
       border:1px solid rgba(255,255,255,.18);
     }
-    #macroTotal, #macroTotalProfile{ margin-top:6px; font-size:13px; font-weight:900; color:rgba(238,242,255,.88) }
+    #macroTotal, #macroTotalProfile{ margin-top:6px; font-size:14px; font-weight:900; color:rgba(238,242,255,.88) }
     input[type="range"]{ width:100% }
 
-    #toast{ position:fixed; top:16px; right:16px; z-index:30; display:flex; flex-direction:column; gap:8px }
+    #toast{ position:fixed; top:calc(16px + env(safe-area-inset-top) + var(--vv-top, 0px)); right:calc(16px + env(safe-area-inset-right)); z-index:30; display:flex; flex-direction:column; gap:8px }
     .toast-msg{
       padding:10px 12px;
       border-radius:12px;
@@ -273,6 +303,7 @@
       background:rgba(16,20,34,.72);
       color:var(--text);
       font-weight:900;
+      font-size:14px;
       box-shadow:0 12px 30px rgba(0,0,0,.45);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -290,7 +321,7 @@
       left:0;
       right:0;
       bottom:0;
-      padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+      padding:12px calc(14px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
       display:none;
       align-items:flex-end;
       justify-content:flex-end;
@@ -316,7 +347,17 @@
     #mobileControls .touch-btn:active{ transform:translateY(1px) scale(0.99) }
     @media (max-width: 520px){
       #hud{ top:10px; left:10px; padding:10px 10px }
-      .chip{ min-width:160px }
+      .badge{ font-size:15px }
+      .chip .label{ font-size:12px }
+      .chip .val{ font-size:14px }
+      .chip{ min-width:0 }
+      #toast{
+        left:50%;
+        right:auto;
+        transform:translateX(-50%);
+        width:min(360px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+      }
+      #toast .toast-msg{ width:100% }
       .btn-row{ flex-direction:column }
       #overlay .btn{ width:100% }
     }
@@ -365,8 +406,8 @@
       </div>
       <div id="stepInput" class="section active">
         <div class="mode-row">
-          <label class="radio"><input type="radio" name="mode" value="target" checked> <span>Enter Target Energy</span></label>
-          <label class="radio"><input type="radio" name="mode" value="profile"> <span>Compute from Profile</span></label>
+          <label class="radio energy-mode"><input type="radio" name="mode" value="target" checked> <span>Enter Target Energy</span></label>
+          <label class="radio energy-mode"><input type="radio" name="mode" value="profile"> <span>Compute from Profile</span></label>
         </div>
         <div id="targetSection" class="section active">
           <div class="form-grid">
@@ -425,8 +466,8 @@
         <div class="review" style="margin-top:12px">
           <div class="k">Select Macro Ratio</div>
           <div class="mode-row" style="margin-top:6px">
-            <label class="radio"><input type="radio" name="macroModeProfile" value="auto" id="macroModeAutoProfile" checked> <span>Auto (Recommended)</span></label>
-            <label class="radio"><input type="radio" name="macroModeProfile" value="custom" id="macroModeCustomProfile"> <span>Custom</span></label>
+            <label class="radio macro-mode"><input type="radio" name="macroModeProfile" value="auto" id="macroModeAutoProfile" checked> <span>Auto (Recommended)</span></label>
+            <label class="radio macro-mode"><input type="radio" name="macroModeProfile" value="custom" id="macroModeCustomProfile"> <span>Custom</span></label>
           </div>
           <div id="macroCustomSectionProfile" class="section">
             <div class="form-grid">
@@ -530,8 +571,24 @@
     const macroCarbLabelEl = document.getElementById('macroCarbLabel')
     const macroTotalEl = document.getElementById('macroTotal')
     const modeInputs = () => Array.from(document.querySelectorAll('input[name="mode"]'))
+    function syncEnergyModeStyles(){
+      for (const label of document.querySelectorAll('.mode-row .radio.energy-mode')){
+        const input = label.querySelector('input[type="radio"]')
+        label.classList.toggle('is-checked', !!(input && input.checked))
+      }
+    }
+    for (const input of modeInputs()) input.addEventListener('change', syncEnergyModeStyles)
+    syncEnergyModeStyles()
     const macroModeAutoProfileEl = document.getElementById('macroModeAutoProfile')
     const macroModeCustomProfileEl = document.getElementById('macroModeCustomProfile')
+    function syncMacroModeStyles(){
+      for (const label of document.querySelectorAll('.mode-row .radio.macro-mode')){
+        const input = label.querySelector('input[type="radio"]')
+        label.classList.toggle('is-checked', !!(input && input.checked))
+      }
+    }
+    for (const input of document.querySelectorAll('input[name="macroModeProfile"]')) input.addEventListener('change', syncMacroModeStyles)
+    syncMacroModeStyles()
     const macroCustomSectionProfileEl = document.getElementById('macroCustomSectionProfile')
     const macroProteinProfileEl = document.getElementById('macroProteinProfile')
     const macroFatProfileEl = document.getElementById('macroFatProfile')
@@ -543,8 +600,11 @@
     let W = 0, H = 0
     function resize() {
       const dpr = Math.max(1, window.devicePixelRatio || 1)
-      const w = window.innerWidth
-      const h = window.innerHeight
+      const vv = window.visualViewport
+      const w = vv ? Math.round(vv.width) : window.innerWidth
+      const h = vv ? Math.round(vv.height) : window.innerHeight
+      document.documentElement.style.setProperty('--vv-top', ((vv && vv.offsetTop) ? vv.offsetTop : 0) + 'px')
+      document.documentElement.style.setProperty('--vv-left', ((vv && vv.offsetLeft) ? vv.offsetLeft : 0) + 'px')
       canvas.style.width = w + 'px'
       canvas.style.height = h + 'px'
       canvas.width = Math.floor(w * dpr)
@@ -554,6 +614,10 @@
     }
     resize()
     window.addEventListener('resize', resize)
+    if (window.visualViewport){
+      window.visualViewport.addEventListener('resize', resize)
+      window.visualViewport.addEventListener('scroll', resize)
+    }
     const keys = {}
     window.addEventListener('keydown', e => { keys[e.code] = true })
     window.addEventListener('keyup', e => { keys[e.code] = false })
@@ -1044,6 +1108,10 @@
       setMobileControlsVisible(false)
     })
     const pending = { mode: 'target', kcal: 0, targets: null, energyLabel: 'Target Energy', formulaText: '' }
+    function formatKcal(label, kcal){
+      if (label === 'Estimated Energy') return (+kcal).toFixed(1)
+      return String(Math.round(+kcal))
+    }
     function showStep(step){
       stepInputEl.classList.toggle('active', step === 'input')
       stepEnergyEl.classList.toggle('active', step === 'energy')
@@ -1200,7 +1268,7 @@
       pending.kcal = kcal
       pending.energyLabel = 'Estimated Energy'
       pending.formulaText = buildEnergyFormulaText({ sex, age, height, weight, activity, stress, bee, kcal })
-      energyReviewValueEl.textContent = `${pending.energyLabel}: ${pending.kcal} kcal`
+      energyReviewValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.kcal)} kcal`
       energyFormulaEl.textContent = pending.formulaText
       showStep('energy')
     })
@@ -1218,7 +1286,7 @@
       pending.macroMode = macroMode
       pending.result = targetsForEnergy(pending.kcal, macroTarget, macroMode)
       pending.targets = pending.result.targets
-      portionEnergyValueEl.textContent = `${pending.energyLabel}: ${pending.kcal} kcal`
+      portionEnergyValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.kcal)} kcal`
       renderPortionReview(pending.result)
       showStep('portions')
     })
@@ -1226,7 +1294,7 @@
     function doStartGame(){
       state.energyKcal = pending.kcal
       state.targets = pending.targets || targetsForEnergy(state.energyKcal).targets
-      energyEl.textContent = `${pending.energyLabel} ${state.energyKcal} kcal`
+      energyEl.textContent = `${pending.energyLabel} ${formatKcal(pending.energyLabel, state.energyKcal)} kcal`
       setup.style.display = 'none'
       overlay.style.display = 'none'
       reset()
