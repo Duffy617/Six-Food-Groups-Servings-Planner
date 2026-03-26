@@ -100,7 +100,9 @@
       gap:8px;
       align-items:center;
       opacity:0.92;
-      white-space:nowrap;
+      white-space:normal;
+      flex-wrap:wrap;
+      max-width:100%;
       font-weight:900;
       font-size:12px;
       padding:0;
@@ -152,7 +154,7 @@
       background:linear-gradient(180deg, rgba(28,30,36,.86), rgba(20,20,26,.82));
       box-shadow:0 0 0 2px rgba(255,77,79,.20) inset;
     }
-    .chip .label{ grid-column:1; grid-row:1; font-size:12px; font-weight:900; color:var(--chip-color,#6b86c4); letter-spacing:.02em; text-transform:uppercase }
+    .chip .label{ grid-column:1; grid-row:1; font-size:12px; font-weight:900; color:var(--chip-color,#6b86c4); letter-spacing:.02em; text-transform:uppercase; white-space:pre-line }
     .chip .val{ grid-column:2; grid-row:1; font-size:13px; font-weight:900; justify-self:end }
     .chip .bar{ grid-column:1 / -1; grid-row:2; height:6px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.12) }
     .chip .fill{ height:100%; background:linear-gradient(90deg, var(--chip-color,#1e3a8a), rgba(255,255,255,.10)); border-radius:999px }
@@ -1177,7 +1179,10 @@
     ]
     const PROTEIN_POWDER_KEY = 'ProteinPowderG'
     const GAME_GROUPS = FOOD_GROUPS.flatMap(g => g.key === 'Proteins'
-      ? [g, { key:'Proteins_medium', label:'Beans, Fish, Eggs, and Meat（medium-fat）', color:'#5b9a6a' }]
+      ? [
+        { ...g, label:'Beans, Fish, Eggs, and Meat\nlow-fat' },
+        { key:'Proteins_medium', label:'Beans, Fish, Eggs, and Meat\nmedium-fat', color:'#5b9a6a' }
+      ]
       : [g]
     ).concat([{ key: PROTEIN_POWDER_KEY, label:'Protein powder (g)', color:'#556b2f' }])
     function labelOf(key){
@@ -2087,6 +2092,7 @@
       const curV = (cm['Vegetables']||0), tarV = (tg['Vegetables']||0)
       const curF = (cm['Fruits']||0), tarF = (tg['Fruits']||0)
       const curO = (cm['Oils and Nuts']||0), tarO = (tg['Oils and Nuts']||0)
+      const curPP = (cm[PROTEIN_POWDER_KEY]||0), tarPP = (tg[PROTEIN_POWDER_KEY]||0)
       const remainCls = (cur, tar) => {
         const remain = Math.max(0, (tar||0) - (cur||0))
         return (tar > 0 && Math.abs(remain) <= 1e-9) ? ' zero' : ''
@@ -2099,6 +2105,9 @@
         `<span class="mt"><span class="lbl">F</span><span class="num${remainCls(curF,tarF)}">${formatHalf(curF)}/${formatHalf(tarF)}</span></span>`,
         `<span class="mt"><span class="lbl">O</span><span class="num${remainCls(curO,tarO)}">${formatHalf(curO)}/${formatHalf(tarO)}</span></span>`
       ]
+      if (tarPP > 0){
+        parts.push(`<span class="mt"><span class="lbl">PP</span><span class="num${remainCls(curPP,tarPP)}">${Math.max(0, Math.round(curPP))}/${Math.max(0, Math.round(tarPP))}g</span></span>`)
+      }
       el.innerHTML = parts.join(' ')
     }
     function showEndOverlay(){
@@ -2867,9 +2876,10 @@
           const candidates = eligible.filter(n=> (counts[n.key]||0) === minCount)
           const pick = candidates[Math.floor(Math.random()*candidates.length)]
           const spawnLabel = labelOf(pick.key)
-          const textW = ctx.measureText(spawnLabel).width
+          const lines = String(spawnLabel).split('\n')
+          const textW = Math.max(...lines.map(l => ctx.measureText(l).width))
           const w = Math.max(80, textW + 24)
-          const h = 28
+          const h = lines.length > 1 ? 44 : 28
           const x = rand(w/2 + 40, W - w/2 - 40)
           ctx.restore()
           const specialRoll = Math.random()
@@ -3574,9 +3584,11 @@
         ctx.textAlign = 'center'
         ctx.font = '700 14px "Zen Maru Gothic", system-ui'
         const label = (typeof c.label === 'string') ? c.label : (c.key || '')
-        const textW = ctx.measureText(label).width
+        const lines = String(label).split('\n')
+        const textW = Math.max(...lines.map(l => ctx.measureText(l).width))
         const needW = Math.max(110, textW + 34)
         if (!c.w || needW > c.w) c.w = needW
+        if (lines.length > 1 && (!c.h || c.h < 44)) c.h = 44
         const w = c.w || needW, h = c.h || 40
         const x0 = c.x - w/2, y0 = c.y - h/2
         const phase = c.phase || 0
@@ -4293,10 +4305,16 @@
         ctx.quadraticCurveTo(c.x+22, headY+6, x0+w-10, y0)
         ctx.stroke()
         ctx.fillStyle = c.kind === 'powerup' ? 'rgba(255,255,255,.92)' : 'rgba(30,24,18,.92)'
+        const lineH = 14
+        const startY = c.y - ((lines.length - 1) * lineH) / 2
         ctx.globalAlpha = 0.18
-        ctx.fillText(label, c.x+0.6, c.y+0.6)
+        for (let i=0;i<lines.length;i++){
+          ctx.fillText(lines[i], c.x+0.6, startY + i*lineH + 0.6)
+        }
         ctx.globalAlpha = 1
-        ctx.fillText(label, c.x, c.y)
+        for (let i=0;i<lines.length;i++){
+          ctx.fillText(lines[i], c.x, startY + i*lineH)
+        }
       }
       for (const pz of state.particles){
         const a = Math.max(0, Math.min(1, pz.life*1.6))
