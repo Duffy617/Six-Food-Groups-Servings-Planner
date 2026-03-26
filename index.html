@@ -110,7 +110,8 @@
     #miniTargets .mt{ display:inline-flex; align-items:center; gap:3px }
     #miniTargets .lbl{ opacity:.85; letter-spacing:.02em }
     #miniTargets .num{ font-variant-numeric:tabular-nums }
-    #miniTargets .num.done{ color: rgba(255,77,79,.92) }
+    #miniTargets .num.full{ color: rgba(170, 96, 96, .95) }
+    #miniTargets .num.exceed{ color: rgba(255,77,79,.92) }
     button.badge{ font:inherit; color:inherit }
     #targetsToggle{ display:none }
     .hint{ color:var(--muted); font-weight:900 }
@@ -2087,14 +2088,16 @@
       const curV = (cm['Vegetables']||0), tarV = (tg['Vegetables']||0)
       const curF = (cm['Fruits']||0), tarF = (tg['Fruits']||0)
       const curO = (cm['Oils and Nuts']||0), tarO = (tg['Oils and Nuts']||0)
-      const done = (cur, tar) => (tar > 0 && cur >= tar - 1e-9)
+      const full = (cur, tar) => (tar > 0 && cur >= tar - 1e-9)
+      const exceed = (cur, tar) => (tar > 0 && cur > tar + 1e-9)
+      const cls = (cur, tar) => exceed(cur, tar) ? ' exceed' : (full(cur, tar) ? ' full' : '')
       const parts = [
-        `<span class="mt"><span class="lbl">G</span><span class="num${done(curG,tarG)?' done':''}">${formatHalf(curG)}/${formatHalf(tarG)}</span></span>`,
-        `<span class="mt"><span class="lbl">P</span><span class="num${done(curP,tarP)?' done':''}">${formatHalf(curP)}/${formatHalf(tarP)}</span></span>`,
-        `<span class="mt"><span class="lbl">D</span><span class="num${done(curD,tarD)?' done':''}">${formatHalf(curD)}/${formatHalf(tarD)}</span></span>`,
-        `<span class="mt"><span class="lbl">V</span><span class="num${done(curV,tarV)?' done':''}">${formatHalf(curV)}/${formatHalf(tarV)}</span></span>`,
-        `<span class="mt"><span class="lbl">F</span><span class="num${done(curF,tarF)?' done':''}">${formatHalf(curF)}/${formatHalf(tarF)}</span></span>`,
-        `<span class="mt"><span class="lbl">O</span><span class="num${done(curO,tarO)?' done':''}">${formatHalf(curO)}/${formatHalf(tarO)}</span></span>`
+        `<span class="mt"><span class="lbl">G</span><span class="num${cls(curG,tarG)}">${formatHalf(curG)}/${formatHalf(tarG)}</span></span>`,
+        `<span class="mt"><span class="lbl">P</span><span class="num${cls(curP,tarP)}">${formatHalf(curP)}/${formatHalf(tarP)}</span></span>`,
+        `<span class="mt"><span class="lbl">D</span><span class="num${cls(curD,tarD)}">${formatHalf(curD)}/${formatHalf(tarD)}</span></span>`,
+        `<span class="mt"><span class="lbl">V</span><span class="num${cls(curV,tarV)}">${formatHalf(curV)}/${formatHalf(tarV)}</span></span>`,
+        `<span class="mt"><span class="lbl">F</span><span class="num${cls(curF,tarF)}">${formatHalf(curF)}/${formatHalf(tarF)}</span></span>`,
+        `<span class="mt"><span class="lbl">O</span><span class="num${cls(curO,tarO)}">${formatHalf(curO)}/${formatHalf(tarO)}</span></span>`
       ]
       el.innerHTML = parts.join(' ')
     }
