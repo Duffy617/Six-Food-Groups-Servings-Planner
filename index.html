@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Nutrition Portions Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -441,6 +444,14 @@
       border-color:rgba(215,200,146,.32);
       background:rgba(47, 46, 30, .82);
     }
+    #updatePortions{
+      border:1px solid rgba(215,200,146,.22);
+      background:rgba(47, 46, 30, .72);
+    }
+    #updatePortions:hover{
+      border-color:rgba(215,200,146,.32);
+      background:rgba(47, 46, 30, .82);
+    }
     .section{ display:none }
     .section.active{ display:block }
     .btn-row{ display:flex; gap:10px; margin-top:18px }
@@ -509,6 +520,18 @@
     }
     .toast-msg.error{ border-color:rgba(255,77,79,.55) }
     .toast-msg.info{ border-color:rgba(76,125,255,.55) }
+
+    #homeGetStarted{
+      position:fixed;
+      left:calc(14px + env(safe-area-inset-left));
+      bottom:calc(14px + env(safe-area-inset-bottom));
+      z-index:16;
+      width:auto;
+      min-width:160px;
+      flex:0 0 auto;
+      pointer-events:auto;
+      box-shadow:0 18px 44px rgba(0,0,0,.55);
+    }
 
     .macro-summary{
       display:grid;
@@ -612,17 +635,17 @@
     }
     #mobileControls .touch-btn:active{ transform:translateY(1px) scale(0.99) }
     @media (max-width: 520px){
-      #topbar{ flex-wrap:wrap }
+      #topbar{ flex-direction:column; align-items:stretch }
       #hud{ width:100% }
       #targetsToggle{ display:inline-flex }
       #targets{
         display:none;
-        position:fixed;
-        top:calc(58px + env(safe-area-inset-top) + var(--vv-top, 0px));
-        left:calc(10px + env(safe-area-inset-left));
-        right:calc(10px + env(safe-area-inset-right));
+        position:relative;
+        top:auto;
+        left:auto;
+        right:auto;
         width:auto;
-        max-height:min(60vh, 420px);
+        max-height:200px;
         overflow:auto;
         grid-template-columns:repeat(2, minmax(0, 1fr));
         padding:10px 10px;
@@ -719,6 +742,7 @@
     </div>
   </div>
   <div id="toast"></div>
+  <button class="btn primary" id="homeGetStarted" type="button">Get started</button>
   <div id="setup">
     <div class="panel">
       <div class="card-header">
@@ -728,7 +752,6 @@
       <div id="stepHome" class="section active">
         <div class="home-splash">
           <div class="home-title">Portion Based <br>Menu Design</div>
-          <button class="btn primary" id="getStarted">Get Started</button>
         </div>
       </div>
       <div id="stepInput" class="section">
@@ -781,7 +804,7 @@
           </div>
         </div>
         <div class="btn-row">
-          <button class="btn primary" id="nextFromInput">Next</button>
+          <button class="btn primary" id="nextFromInput" type="button">Next</button>
         </div>
       </div>
       <div id="stepEnergy" class="section">
@@ -816,8 +839,8 @@
           </div>
         </div>
         <div class="btn-row">
-          <button class="btn" id="backToInputFromEnergy">Back</button>
-          <button class="btn primary" id="nextToPortionsFromEnergy">Next</button>
+          <button class="btn" id="backToInputFromEnergy" type="button">Back</button>
+          <button class="btn primary" id="nextToPortionsFromEnergy" type="button">Next</button>
         </div>
       </div>
       <div id="stepPortions" class="section">
@@ -894,6 +917,7 @@
     const energyEl = document.getElementById('energy')
     const targetsEl = document.getElementById('targets')
     const targetsToggleBtn = document.getElementById('targetsToggle')
+    const homeGetStartedBtn = document.getElementById('homeGetStarted')
     const timerEl = document.getElementById('timer')
     const livesEl = document.getElementById('lives')
     const overlay = document.getElementById('overlay')
@@ -1022,6 +1046,14 @@
     window.addEventListener('keydown', e => { keys[e.code] = true })
     window.addEventListener('keyup', e => { keys[e.code] = false })
     const isTouchDevice = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || (navigator.maxTouchPoints || 0) > 0
+    const HOME_INTENT_GROUPS = [
+      { label: 'Grains', color: '#d6b25e' },
+      { label: 'Beans, Fish, Eggs and Meat', color: '#d78c7a' },
+      { label: 'Dairy', color: '#9ab2e8' },
+      { label: 'Vegetables', color: '#66c36f' },
+      { label: 'Fruits', color: '#ff6b6b' },
+      { label: 'Oils and Nuts', color: '#d2a451' },
+    ]
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)) }
     function rand(a,b){ return a + Math.random()*(b-a) }
     function dist(ax,ay,bx,by){ const dx=ax-bx, dy=ay-by; return Math.hypot(dx,dy) }
@@ -1041,12 +1073,27 @@
       document.body.classList.toggle('targets-open', !!open)
       if (!targetsToggleBtn) return
       targetsToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false')
-      targetsToggleBtn.textContent = open ? 'Close' : 'Servings'
+      targetsToggleBtn.textContent = open ? 'Hide' : 'Servings'
     }
-    setTargetsOpen(false)
+    function renderHomeIntentTargets(){
+      const chips = HOME_INTENT_GROUPS.map(n => (
+        `<div class="chip" style="--chip-color:${n.color}">` +
+        `<div class="label">${n.label}</div>` +
+        `<div class="val">—</div>` +
+        `<div class="bar"><div class="fill" style="width:0%"></div></div>` +
+        `</div>`
+      ))
+      targetsEl.innerHTML = chips.join('')
+    }
+    const defaultTargetsOpen = ((window.matchMedia && window.matchMedia('(max-width: 520px)').matches) || isTouchDevice)
+    setTargetsOpen(defaultTargetsOpen)
     targetsToggleBtn && targetsToggleBtn.addEventListener('click', () => {
       setTargetsOpen(!document.body.classList.contains('targets-open'))
     })
+    function setHomeGetStartedVisible(visible){
+      if (!homeGetStartedBtn) return
+      homeGetStartedBtn.style.display = visible ? 'inline-flex' : 'none'
+    }
     function lifeGainEffect(x,y){
       const cols = [
         'rgba(255,224,170,.95)',
@@ -1108,6 +1155,16 @@
       return f ? (f.label || f.key) : key
     }
     function halfRound(n){ return Math.round(n*2)/2 }
+    function parseLooseNumber(raw){
+      const s0 = String(raw ?? '').trim()
+      if (!s0) return NaN
+      const s1 = s0
+        .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+        .replace(/[\s,，]/g, '')
+        .replace(/kcal/ig, '')
+      const v = parseFloat(s1)
+      return isFinite(v) ? v : NaN
+    }
     function normalizeMacroInts(pPct, fPct, cPct){
       const p = Math.max(0, Math.round(+pPct || 0))
       const f = Math.max(0, Math.round(+fPct || 0))
@@ -1138,23 +1195,14 @@
       const macroTarget = macroOverride && isFinite(macroOverride.cPct) && isFinite(macroOverride.pPct) && isFinite(macroOverride.fPct)
         ? macroOverride
         : { cPct: 55, pPct: 20, fPct: 25 }
-      const proteinPowderG = Math.max(0, isFinite(+external?.proteinPowderG) ? (+external.proteinPowderG) : 0)
+      let proteinPowderG = Math.max(0, isFinite(+external?.proteinPowderG) ? (+external.proteinPowderG) : 0)
       const proteinPowderProteinPerG = Math.max(0, isFinite(+external?.proteinPowderProteinPerG) ? (+external.proteinPowderProteinPerG) : 0.8)
-      const powderProteinG = proteinPowderG * proteinPowderProteinPerG
+      let powderProteinG = proteinPowderG * proteinPowderProteinPerG
       const powderCarbG = 0
       const powderFatG = 0
       const powderKcal = powderProteinG * 4 + powderCarbG * 4 + powderFatG * 9
-      const basePlusPowderKcal = baseKcalInput + powderKcal
-      let plannedKcal = basePlusPowderKcal
-      const minKcalForPowder = Math.max(
-        (macroTarget.cPct > 0.001) ? ((powderCarbG * 4) / (macroTarget.cPct / 100)) : 0,
-        (macroTarget.pPct > 0.001) ? ((powderProteinG * 4) / (macroTarget.pPct / 100)) : 0,
-        (macroTarget.fPct > 0.001) ? ((powderFatG * 9) / (macroTarget.fPct / 100)) : 0
-      )
-      if (isFinite(minKcalForPowder) && minKcalForPowder > plannedKcal + 1e-6){
-        plannedKcal = Math.ceil(minKcalForPowder / 5) * 5
-      }
-      kcal = plannedKcal
+      const remainingKcalForFood = Math.max(0, baseKcalInput - powderKcal)
+      kcal = baseKcalInput
       const isMacroTargetTypical = macroTarget.cPct >= 45 && macroTarget.cPct <= 65
         && macroTarget.pPct >= 5 && macroTarget.pPct <= 25
         && macroTarget.fPct >= 15 && macroTarget.fPct <= 35
@@ -1165,11 +1213,48 @@
         Math.max(0, 20 - macroTarget.fPct, macroTarget.fPct - 30)
       )
       const severeImbalance = macroImbalance >= 8
-      const servingStep = 0.5
+      const lockStrictMacro = !!(external && external._lockStrictMacro)
+      const autoPowderUsed = !!(external && external._autoPowderUsed)
+      const isHighProteinTarget = macroTarget.pPct >= 35
+      if (!autoPowderUsed && !lockStrictMacro && proteinPowderG === 0 && isHighProteinTarget && proteinPowderProteinPerG > 0){
+        const thresholds = [0.5, 1, 2, 5]
+        const desiredProteinG = Math.max(0, (baseKcalInput * (macroTarget.pPct/100)) / 4)
+        const hiProteinG = Math.min(200, desiredProteinG)
+        let bestRes = null
+        let bestAbs = Infinity
+        for (const thr of thresholds){
+          let lo = 0
+          let hi = hiProteinG
+          const visited = new Set()
+          for (let i = 0; i < 14; i++){
+            const mid = (lo + hi) / 2
+            const powderG2 = Math.max(0, Math.round(mid / proteinPowderProteinPerG))
+            if (visited.has(powderG2)) break
+            visited.add(powderG2)
+            const res = computeTargetsTaiwan(baseKcalInput, macroTarget, macroSource, { ...(external || {}), proteinPowderG: powderG2, proteinPowderProteinPerG, _autoPowderUsed: true, _lockStrictMacro: true, _strictMaxAbs: thr })
+            const cPct = +res?.macros?.carbsPct
+            const pPct = +res?.macros?.proteinPct
+            const fPct = +res?.macros?.fatPct
+            const abs = Math.max(
+              Math.abs(cPct - macroTarget.cPct),
+              Math.abs(pPct - macroTarget.pPct),
+              Math.abs(fPct - macroTarget.fPct)
+            )
+            if (abs < bestAbs){
+              bestAbs = abs
+              bestRes = res
+            }
+            if (!isFinite(pPct)) break
+            if (pPct < macroTarget.pPct) lo = mid + proteinPowderProteinPerG
+            else hi = mid
+            if (abs <= thr + 1e-9 && bestRes) break
+          }
+          if (bestAbs <= thr + 1e-9 && bestRes) return bestRes
+        }
+        if (bestRes) return bestRes
+      }
+      const servingStep = lockStrictMacro ? 0.25 : 0.5
       const roundServing = (n) => Math.round(n / servingStep) * servingStep
-      const carbTargetG = Math.max(0, ((kcal * (macroTarget.cPct/100)) / 4) - powderCarbG)
-      const proteinTargetG = Math.max(0, ((kcal * (macroTarget.pPct/100)) / 4) - powderProteinG)
-      const fatTargetG = Math.max(0, ((kcal * (macroTarget.fPct/100)) / 9) - powderFatG)
       const FOOD = {
         grains: { c:15, p:2, f:0, kcal:70 },
         fruit: { c:15, p:0, f:0, kcal:60 },
@@ -1178,14 +1263,21 @@
         oil: { c:0, p:0, f:5, kcal:45 },
         dairyLow: { c:12, p:8, f:4, kcal:120 },
       }
-      const recommended = { grains:[10,20], proteins:[4,8], dairy:[1,2], veg:[3,5], fruit:[2,4], oils:[3,7] }
-      const recommendedScale = isMacroTargetTypical ? (kcal / 2000) : 1
+      const recommended = {
+        grains:[10, 20],
+        proteins:[4, 8],
+        dairy:[1.5, 2],
+        veg:[3, 5],
+        fruit:[2, 4],
+        oils:[3, 7],
+      }
+      const recommendedScale = Math.max(0.4, Math.min(2.5, (remainingKcalForFood || 0) / 2000))
       const scaleRange = (r, scale) => {
         const lo = roundServing(Math.max(0, r[0] * scale))
         const hi = roundServing(Math.max(0, r[1] * scale))
         return hi >= lo ? [lo, hi] : [lo, lo]
       }
-      let effRecommended = recommendedScale === 1 ? recommended : {
+      let effRecommended = Math.abs(recommendedScale - 1) < 1e-9 ? recommended : {
         grains: scaleRange(recommended.grains, recommendedScale),
         proteins: scaleRange(recommended.proteins, recommendedScale),
         dairy: scaleRange(recommended.dairy, recommendedScale),
@@ -1233,8 +1325,9 @@
       const imbalanceRanges = capRanges(severeImbalance
         ? { grains:[0, 45], proteins:[0, 22], dairy:[0, 5], veg:[0, 14], fruit:[0, 12], oils:[3, 20] }
         : { grains:[0, 35], proteins:[0, 16], dairy:[0, 3], veg:[0, 10], fruit:[0, 8], oils:[3, 16] })
-      let energyTolAbsKcal = 100
-      let macroMaxAbsPct = 2
+      const strictMaxAbs = Math.max(0, isFinite(+external?._strictMaxAbs) ? (+external._strictMaxAbs) : 0.5)
+      let energyTolAbsKcal = lockStrictMacro ? 60 : 40
+      let macroMaxAbsPct = lockStrictMacro ? strictMaxAbs : 0.5
       let minE = kcal - energyTolAbsKcal
       let maxE = kcal + energyTolAbsKcal
       function setConstraints(nextEnergyTolAbsKcal, nextMacroMaxAbsPct){
@@ -1255,12 +1348,13 @@
         return { carbsG, proteinG, fatG, totalE, cPct, pPct, fPct }
       }
       let adjustments = []
+      let carbTargetG = 0
+      let proteinTargetG = 0
+      let fatTargetG = 0
       if (proteinPowderG > 0){
         adjustments.push(`Included protein powder: ${Math.round(proteinPowderG)} g/day`)
-        adjustments.push(`Target energy: ${Math.round(baseKcalInput)} + ${Math.round(powderKcal)} = ${Math.round(basePlusPowderKcal)} kcal`)
-        if (kcal > basePlusPowderKcal + 1e-6){
-          adjustments.push(`Target energy increased to ${Math.round(kcal)} kcal to satisfy macro ratio with protein powder`)
-        }
+        adjustments.push(`Target energy: ${Math.round(baseKcalInput)} kcal (protein powder included)`)
+        adjustments.push(`Food energy after powder: ${Math.round(remainingKcalForFood)} kcal`)
       }
       function clamp(x, lo, hi){ return Math.max(lo, Math.min(hi, x)) }
       function macroSse(t){
@@ -1497,6 +1591,9 @@
         fruit:[minFruitServing, 6],
         oils:[Math.min(3, minOilServing), 14],
       }
+      carbTargetG = Math.max(0, ((kcal * (macroTarget.cPct/100)) / 4) - powderCarbG)
+      proteinTargetG = Math.max(0, ((kcal * (macroTarget.pPct/100)) / 4) - powderProteinG)
+      fatTargetG = Math.max(0, ((kcal * (macroTarget.fPct/100)) / 9) - powderFatG)
       function randStep(lo, hi){
         return roundServing(clamp(lo + Math.random()*(hi-lo), lo, hi))
       }
@@ -1534,6 +1631,60 @@
           const start = randomStart(ranges)
           const cand = refine(start, ranges)
           if (cand) best = chooseBetter(best, cand)
+        }
+        return best
+      }
+      function neighborhoodRefine(base, ranges, radiusTicks){
+        if (!base) return base
+        const step = servingStep
+        const toTicks = (x) => Math.round(x / step)
+        const fromTicks = (t) => t * step
+        let best = base
+        const minOil = severeImbalance
+          ? Math.max(minOilServing, ranges.oils[0])
+          : Math.max(minOilServing, (lowFatTarget ? ranges.oils[0] : Math.max(3, ranges.oils[0])))
+        const clampR = (x, lo, hi) => Math.max(lo, Math.min(hi, x))
+        const b = { g:base.g, p:base.p, d:base.d, v:base.v, r:base.r, o:base.o }
+        const bt = { g:toTicks(b.g), p:toTicks(b.p), d:toTicks(b.d), v:toTicks(b.v), r:toTicks(b.r), o:toTicks(b.o) }
+        const lo = {
+          g: toTicks(ranges.grains[0]),
+          p: toTicks(ranges.proteins[0]),
+          d: toTicks(ranges.dairy[0]),
+          v: toTicks(ranges.veg[0]),
+          r: toTicks(ranges.fruit[0]),
+          o: toTicks(minOil)
+        }
+        const hi = {
+          g: toTicks(ranges.grains[1]),
+          p: toTicks(ranges.proteins[1]),
+          d: toTicks(ranges.dairy[1]),
+          v: toTicks(ranges.veg[1]),
+          r: toTicks(ranges.fruit[1]),
+          o: toTicks(ranges.oils[1])
+        }
+        for (let dg=-radiusTicks; dg<=radiusTicks; dg++){
+          for (let dp=-radiusTicks; dp<=radiusTicks; dp++){
+            for (let dd=-radiusTicks; dd<=radiusTicks; dd++){
+              for (let dv=-radiusTicks; dv<=radiusTicks; dv++){
+                for (let dr=-radiusTicks; dr<=radiusTicks; dr++){
+                  for (let doil=-radiusTicks; doil<=radiusTicks; doil++){
+                    if (dg===0 && dp===0 && dd===0 && dv===0 && dr===0 && doil===0) continue
+                    const tg = clampR(bt.g + dg, lo.g, hi.g)
+                    const tp = clampR(bt.p + dp, lo.p, hi.p)
+                    const td = clampR(bt.d + dd, lo.d, hi.d)
+                    const tv = clampR(bt.v + dv, lo.v, hi.v)
+                    const tr = clampR(bt.r + dr, lo.r, hi.r)
+                    const to = clampR(bt.o + doil, lo.o, hi.o)
+                    const s = { g:fromTicks(tg), p:fromTicks(tp), d:fromTicks(td), v:fromTicks(tv), r:fromTicks(tr), o:fromTicks(to) }
+                    const t = totals(s.g, s.p, s.d, s.v, s.r, s.o)
+                    if (!isValid(t, s)) continue
+                    const cand = { ...s, t, sse: macroSse(t), energyGap: Math.abs(t.totalE - kcal), exceed: exceedScore(s) }
+                    best = chooseBetter(best, cand)
+                  }
+                }
+              }
+            }
+          }
         }
         return best
       }
@@ -1577,11 +1728,11 @@
         return best
       }
       const triesScale = severeImbalance ? 6 : (lowFatTarget ? 3 : 1)
-      const useExhaustive = isMacroTargetTypical && !severeImbalance && kcal >= 1200 && kcal <= 2800
+      const useExhaustive = (isMacroTargetTypical && !severeImbalance && kcal >= 1200 && kcal <= 2800)
       let best = useExhaustive
         ? exhaustiveSearch(strictRanges)
         : searchBest(strictRanges, Math.round((isMacroTargetTypical && !severeImbalance ? 160 : 40) * triesScale))
-      if (!best && severeImbalance){
+      if (!best && severeImbalance && !lockStrictMacro){
         setConstraints(100, 60)
         adjustments.push('Target macro ratio may be infeasible; searching closest achievable ratio')
         best = searchBest(strictRanges, Math.round(160 * triesScale)) || searchBest(relaxedRanges, Math.round(160 * triesScale))
@@ -1594,12 +1745,12 @@
         best = searchBest(fallbackRanges, Math.round((isMacroTargetTypical && !severeImbalance ? 260 : 120) * triesScale))
         if (best) adjustments.push('Relaxed serving limits to find a feasible solution')
       }
-      if (!best){
+      if (!best && !lockStrictMacro){
         setConstraints(200, 8)
         adjustments.push('Relaxed macro and energy tolerances to find a feasible solution')
         best = searchBest(fallbackRanges, 80) || searchBest(relaxedRanges, 80) || searchBest(strictRanges, 80)
       }
-      if (!best){
+      if (!best && !lockStrictMacro){
         setConstraints(350, 15)
         adjustments.push('Further relaxed tolerances to find any feasible solution')
         best = searchBest(fallbackRanges, 120) || searchBest(relaxedRanges, 120) || searchBest(strictRanges, 120)
@@ -1612,6 +1763,8 @@
         best = { g:baseGrains, p:baseProteins, d:1, v:3, r:2, o:baseOils, t, sse:Infinity, energyGap:Math.abs(t.totalE-kcal), exceed:0 }
         adjustments.push('Used heuristic fallback; tolerances may be exceeded')
       }
+      best = neighborhoodRefine(best, strictRanges, 2) || best
+      best = neighborhoodRefine(best, relaxedRanges, 2) || best
       const tfin = best.t || totals(best.g, best.p, best.d, best.v, best.r, best.o)
       const finalAbs = macroAbsStats(tfin)
       const finalEnergyGap = Math.abs(tfin.totalE - kcal)
@@ -1643,7 +1796,7 @@
           dairyType: 'low-fat',
           proteinType: 'low-fat',
           proteinPowderG: Math.round(proteinPowderG),
-          proteinPowderProteinPerG: Math.round(proteinPowderProteinPerG * 100) / 100,
+          proteinPowderProteinPerG,
           baseKcal: Math.round(baseKcalInput),
           macroTarget,
           macroSource: macroSource || 'auto',
@@ -1815,6 +1968,8 @@
     }
     function reset(){
       state.running = true
+      state.paused = false
+      state.level = 1
       state.time = 0
       state.player.x = W*0.5
       const bottom = PLAY_BOTTOM || H
@@ -1834,6 +1989,9 @@
       state.dust = []
       state.nebula = []
       state.lives = 5
+      state.doubleShotsLeft = 0
+      state.doubleGlowT = 0
+      prevSpace = false
       const starCount = Math.max(120, Math.floor(W*H/12000))
       for (let i=0;i<starCount;i++){
         state.stars.push({ x: rand(20,W-20), y: rand(20,H-20), r: rand(0.6,1.8), tw: rand(0.8,1.6), a: rand(0.4,1) })
@@ -2035,7 +2193,7 @@
           dairyType,
           proteinType: pending?.result?.assumptions?.proteinType || 'low-fat',
           proteinPowderG: Math.round(pending?.proteinPowderG || 0),
-          proteinPowderProteinPerG: Math.round((pending?.proteinPowderProteinPerG ?? 0.8) * 100) / 100,
+          proteinPowderProteinPerG: (pending?.proteinPowderProteinPerG ?? 0.8),
           macroTarget: mt || { cPct: 55, pPct: 20, fPct: 25 },
           macroSource: 'manual'
         }
@@ -2054,31 +2212,11 @@
     }
     function updateNextFromInputEnabled(){
       if (!nextFromInputBtn) return
-      const mode = modeInputs().find(i=>i.checked)?.value || 'target'
-      if (mode !== 'target'){
-        nextFromInputBtn.disabled = false
-        return
-      }
-      const p = Math.round(+macroProteinEl.value)
-      const f = Math.round(+macroFatEl.value)
-      const c = Math.round(+macroCarbEl.value)
-      nextFromInputBtn.disabled = (p + f + c) !== 100
+      nextFromInputBtn.disabled = false
     }
     function updateNextToPortionsFromEnergyEnabled(){
       if (!nextToPortionsFromEnergyBtn) return
-      const macroMode = (document.querySelector('input[name="macroModeProfile"]:checked')?.value) || 'auto'
-      if (macroMode !== 'custom'){
-        nextToPortionsFromEnergyBtn.disabled = false
-        return
-      }
-      if (!macroProteinProfileEl || !macroFatProfileEl || !macroCarbProfileEl){
-        nextToPortionsFromEnergyBtn.disabled = false
-        return
-      }
-      const p = Math.round(+macroProteinProfileEl.value)
-      const f = Math.round(+macroFatProfileEl.value)
-      const c = Math.round(+macroCarbProfileEl.value)
-      nextToPortionsFromEnergyBtn.disabled = (p + f + c) !== 100
+      nextToPortionsFromEnergyBtn.disabled = false
     }
     function updateStressUI(){
       const v = stressEl.value
@@ -2109,7 +2247,10 @@
         : (isFinite(+pending?.proteinPowderProteinPerG) ? (+pending.proteinPowderProteinPerG) : 0.8)
       if (editable){
         html.push(`<label><span>Protein powder (g/day)</span><input class="protein-powder" type="number" min="0" step="1" value="${Math.max(0, Math.round(proteinPowderG))}"></label>`)
-        html.push(`<label><span>Protein per 1g powder (g)</span><input class="protein-powder-perg" type="number" min="0" step="0.01" value="${Math.max(0, Math.round(proteinPowderProteinPerG * 100) / 100)}"></label>`)
+        const perGText = (pending?.proteinPowderProteinPerGText != null && String(pending.proteinPowderProteinPerGText).trim() !== '')
+          ? String(pending.proteinPowderProteinPerGText).trim()
+          : String(Math.max(0, proteinPowderProteinPerG))
+        html.push(`<label><span>Protein per 1g powder (g)</span><input class="protein-powder-perg" type="number" min="0" step="0.01" value="${perGText}"></label>`)
       }
       for (const n of FOOD_GROUPS){
         const tar = targets[n.key] ?? 0
@@ -2190,8 +2331,11 @@
             sum.p += powderProteinG
             sum.kcal += powderProteinG * 4
             const perP = Math.max(0, proteinPowderProteinPerG)
+            const perPText = (pending?.proteinPowderProteinPerGText != null && String(pending.proteinPowderProteinPerGText).trim() !== '')
+              ? String(pending.proteinPowderProteinPerGText).trim()
+              : String(perP)
             const totalP = powderProteinG
-            return `<tr class="protein-powder-row"><td>Protein powder</td><td class="num">${fmt(Math.max(0, Math.round(proteinPowderG)))} g</td><td>0/${fmt(perP)}/0 g (per 1g)</td><td class="num">0</td><td class="num">${fmt(totalP)}</td><td class="num">0</td></tr>`
+            return `<tr class="protein-powder-row"><td>Protein powder</td><td class="num">${fmt(Math.max(0, Math.round(proteinPowderG)))} g</td><td>0/${perPText}/0 g (per 1g)</td><td class="num">0</td><td class="num">${fmt(totalP)}</td><td class="num">0</td></tr>`
           })()
         ] : []),
         `<tr><td><strong>Total</strong></td><td class="num"></td><td></td><td class="num"><strong>${fmt(sum.c)}</strong></td><td class="num"><strong>${fmt(sum.p)}</strong></td><td class="num"><strong>${fmt(sum.f)}</strong></td></tr>`,
@@ -2273,9 +2417,25 @@
         const v = isFinite(+pending?.proteinPowderProteinPerG)
           ? (+pending.proteinPowderProteinPerG)
           : (isFinite(+result?.assumptions?.proteinPowderProteinPerG) ? (+result.assumptions.proteinPowderProteinPerG) : 0.8)
-        proteinPowderProteinPerGEl.value = String(Math.max(0, Math.round(v * 100) / 100))
+        if (pending?.proteinPowderProteinPerGText != null && String(pending.proteinPowderProteinPerGText).trim() !== ''){
+          proteinPowderProteinPerGEl.value = String(pending.proteinPowderProteinPerGText).trim()
+        } else {
+          proteinPowderProteinPerGEl.value = String(Math.max(0, v))
+        }
       }
       renderPortionReviewInto(result, portionReviewEl, breakdownTableEl, macroReviewEl, macroSummaryEl, false)
+    }
+    function syncAutoProteinPowderToPending(result){
+      const resultPowderG = isFinite(+result?.assumptions?.proteinPowderG) ? (+result.assumptions.proteinPowderG) : 0
+      const pendingPowderG = isFinite(+pending?.proteinPowderG) ? (+pending.proteinPowderG) : 0
+      if (pendingPowderG > 0) return
+      if (!(resultPowderG > 0)) return
+      pending.proteinPowderG = Math.round(resultPowderG)
+      const resultPerG = isFinite(+result?.assumptions?.proteinPowderProteinPerG) ? (+result.assumptions.proteinPowderProteinPerG) : (pending?.proteinPowderProteinPerG ?? 0.8)
+      pending.proteinPowderProteinPerG = resultPerG
+      if (pending?.proteinPowderProteinPerGText == null || String(pending.proteinPowderProteinPerGText).trim() === ''){
+        pending.proteinPowderProteinPerGText = String(resultPerG)
+      }
     }
     function buildEnergyFormulaText({ sex, age, height, weight, activity, stress, bee, kcal }){
       const base = sex === 'male'
@@ -2286,10 +2446,32 @@
     modeInputs().forEach(i=> i.addEventListener('change', updateModeUI))
     updateModeUI()
     showStep('home')
-    getStartedBtn && getStartedBtn.addEventListener('click', () => showStep('input'))
+    setup.style.display = 'none'
+    overlay.style.display = 'none'
+    renderHomeIntentTargets()
+    setTargetsOpen(true)
+    setHomeGetStartedVisible(true)
+    homeGetStartedBtn && homeGetStartedBtn.addEventListener('click', () => {
+      setup.style.display = 'flex'
+      overlay.style.display = 'none'
+      nextBtn.style.display = 'none'
+      pauseContinueBtn.style.display = 'none'
+      pauseExitBtn.style.display = 'none'
+      restartBtn.style.display = 'inline-block'
+      setMobileControlsVisible(false)
+      state.running = false
+      state.paused = false
+      setTargetsOpen(false)
+      showStep('input')
+      setHomeGetStartedVisible(false)
+    })
+    getStartedBtn && getStartedBtn.addEventListener('click', () => {
+      showStep('input')
+      setTargetsOpen(false)
+    })
     stressEl.addEventListener('change', updateStressUI)
     updateStressUI()
-    nextFromInputBtn.addEventListener('click', () => {
+    function handleNextFromInput(){
       const age = +ageEl.value
       const sex = sexEl.value
       const height = +heightEl.value
@@ -2306,43 +2488,68 @@
         const r = ranges[stressSel]
         const sv = +stressValueEl.value
         if (!r || !isFinite(sv) || sv < r.min || sv > r.max){
-          showToast('Please enter a Stress Factor value within the allowed range','error')
-          return
+          stress = r ? r.min : 1.0
+          if (stressValueEl && r) stressValueEl.value = String(stress)
         }
-        stress = sv
+        if (isFinite(sv) && r && sv >= r.min && sv <= r.max) stress = sv
       }
       const mode = modeInputs().find(i=>i.checked)?.value || 'target'
       pending.mode = mode
       if (mode === 'target'){
-        const override = +document.getElementById('kcal').value
-        if (!isFinite(override) || override <= 0){ showToast('Please enter a valid target energy','error'); return }
+        const kcalInputEl = document.getElementById('kcal')
+        const overrideRaw = parseLooseNumber(kcalInputEl?.value)
+        const override = Math.max(600, isFinite(overrideRaw) ? overrideRaw : 1800)
+        if (kcalInputEl) kcalInputEl.value = String(Math.round(override))
+
+        const norm = normalizeMacroInts(+macroProteinEl.value, +macroFatEl.value, +macroCarbEl.value)
+        if (!norm){
+          macroProteinEl.value = '20'
+          macroFatEl.value = '25'
+          macroCarbEl.value = '55'
+          updateMacroLabels()
+        }
+        const norm2 = normalizeMacroInts(+macroProteinEl.value, +macroFatEl.value, +macroCarbEl.value) || { pPct:20, fPct:25, cPct:55 }
         const mp = Math.round(+macroProteinEl.value)
         const mf = Math.round(+macroFatEl.value)
         const mc = Math.round(+macroCarbEl.value)
         if ((mp + mf + mc) !== 100){
-          showToast('Macronutrients total must be 100%','error')
-          return
+          macroProteinEl.value = String(norm2.pPct)
+          macroFatEl.value = String(norm2.fPct)
+          macroCarbEl.value = String(norm2.cPct)
+          updateMacroLabels()
         }
-        const norm = normalizeMacroInts(+macroProteinEl.value, +macroFatEl.value, +macroCarbEl.value)
-        if (!norm){ showToast('Please set at least one macro value above 0%','error'); return }
         pending.kcal = Math.round(override)
         pending.energyLabel = 'Target Energy'
-        pending.macroTarget = { cPct: norm.cPct, pPct: norm.pPct, fPct: norm.fPct }
-        pending.result = targetsForEnergy(pending.kcal, pending.macroTarget, 'custom', { proteinPowderG: pending.proteinPowderG || 0, proteinPowderProteinPerG: pending.proteinPowderProteinPerG })
-        pending.targets = { ...pending.result.targets, Proteins_medium: 0 }
-        portionEnergyValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.result?.kcal ?? pending.kcal)} kcal`
-        renderPortionReview(pending.result)
-        showStep('portions')
+        pending.macroTarget = { cPct: norm2.cPct, pPct: norm2.pPct, fPct: norm2.fPct }
+        try{
+          pending.result = targetsForEnergy(pending.kcal, pending.macroTarget, 'custom', { proteinPowderG: pending.proteinPowderG || 0, proteinPowderProteinPerG: pending.proteinPowderProteinPerG })
+          syncAutoProteinPowderToPending(pending.result)
+          pending.targets = { ...pending.result.targets, Proteins_medium: 0 }
+          portionEnergyValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.result?.kcal ?? pending.kcal)} kcal`
+          renderPortionReview(pending.result)
+          showStep('portions')
+        } catch (e){
+          const msg = (e && (e.message || String(e))) ? (e.message || String(e)) : 'Unknown error'
+          showToast(`Calculation failed: ${msg}`,'error', 6000)
+        }
         return
       }
       function validNum(v,min){ return isFinite(v) && v >= min }
-      if (!validNum(age,1) || !validNum(height,50) || !validNum(weight,10)){
-        showToast('Please complete all profile fields correctly','error')
-        return
+      let age2 = age
+      let height2 = height
+      let weight2 = weight
+      if (!validNum(age2,1)) age2 = 25
+      if (!validNum(height2,50)) height2 = 170
+      if (!validNum(weight2,10)) weight2 = 65
+      if (age2 !== age && ageEl) ageEl.value = String(age2)
+      if (height2 !== height && heightEl) heightEl.value = String(height2)
+      if (weight2 !== weight && weightEl) weightEl.value = String(weight2)
+      if (age2 !== age || height2 !== height || weight2 !== weight){
+        showToast('Some profile fields were invalid; defaults applied','info')
       }
       const bee = sex === 'male'
-        ? 66 + 13.7*weight + 5*height - 6.8*age
-        : 655 + 9.6*weight + 1.8*height - 4.7*age
+        ? 66 + 13.7*weight2 + 5*height2 - 6.8*age2
+        : 655 + 9.6*weight2 + 1.8*height2 - 4.7*age2
       const kcal = bee * activity * stress
       pending.kcal = kcal
       pending.energyLabel = 'Estimated Energy'
@@ -2350,37 +2557,108 @@
       energyReviewValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.kcal)} kcal`
       energyFormulaEl.textContent = pending.formulaText
       showStep('energy')
+    }
+    nextFromInputBtn.addEventListener('click', (e) => {
+      try{ document.activeElement && document.activeElement.blur && document.activeElement.blur() } catch {}
+      handleNextFromInput()
     })
+    nextFromInputBtn.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      try{ document.activeElement && document.activeElement.blur && document.activeElement.blur() } catch {}
+      handleNextFromInput()
+    }, { passive:false })
     backToInputFromEnergyBtn.addEventListener('click', () => showStep('input'))
-    nextToPortionsFromEnergyBtn.addEventListener('click', () => {
+    function handleNextToPortionsFromEnergy(){
       let macroTarget = { cPct: 55, pPct: 20, fPct: 25 }
       const macroMode = (document.querySelector('input[name="macroModeProfile"]:checked')?.value) || 'auto'
       if (macroMode === 'custom'){
+        const norm = normalizeMacroInts(+macroProteinProfileEl.value, +macroFatProfileEl.value, +macroCarbProfileEl.value)
+        if (!norm){ showToast('Please set at least one macro value above 0%','error'); return }
         const mp = Math.round(+macroProteinProfileEl.value)
         const mf = Math.round(+macroFatProfileEl.value)
         const mc = Math.round(+macroCarbProfileEl.value)
         if ((mp + mf + mc) !== 100){
-          showToast('Macronutrients total must be 100%','error')
-          return
+          macroProteinProfileEl.value = String(norm.pPct)
+          macroFatProfileEl.value = String(norm.fPct)
+          macroCarbProfileEl.value = String(norm.cPct)
+          updateMacroLabelsProfile()
         }
-        const norm = normalizeMacroInts(+macroProteinProfileEl.value, +macroFatProfileEl.value, +macroCarbProfileEl.value)
-        if (!norm){ showToast('Please set at least one macro value above 0%','error'); return }
         macroTarget = { cPct: norm.cPct, pPct: norm.pPct, fPct: norm.fPct }
       }
       pending.macroTarget = macroTarget
       pending.macroMode = macroMode
-      pending.result = targetsForEnergy(pending.kcal, macroTarget, macroMode, { proteinPowderG: pending.proteinPowderG || 0, proteinPowderProteinPerG: pending.proteinPowderProteinPerG })
-      pending.targets = { ...pending.result.targets, Proteins_medium: 0 }
-      portionEnergyValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.result?.kcal ?? pending.kcal)} kcal`
-      renderPortionReview(pending.result)
-      showStep('portions')
+      try{
+        pending.result = targetsForEnergy(pending.kcal, macroTarget, macroMode, { proteinPowderG: pending.proteinPowderG || 0, proteinPowderProteinPerG: pending.proteinPowderProteinPerG })
+        syncAutoProteinPowderToPending(pending.result)
+        pending.targets = { ...pending.result.targets, Proteins_medium: 0 }
+        portionEnergyValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.result?.kcal ?? pending.kcal)} kcal`
+        renderPortionReview(pending.result)
+        showStep('portions')
+      } catch (e){
+        const msg = (e && (e.message || String(e))) ? (e.message || String(e)) : 'Unknown error'
+        showToast(`Calculation failed: ${msg}`,'error', 6000)
+      }
+    }
+    nextToPortionsFromEnergyBtn.addEventListener('click', (e) => {
+      try{ document.activeElement && document.activeElement.blur && document.activeElement.blur() } catch {}
+      handleNextToPortionsFromEnergy()
     })
+    nextToPortionsFromEnergyBtn.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      try{ document.activeElement && document.activeElement.blur && document.activeElement.blur() } catch {}
+      handleNextToPortionsFromEnergy()
+    }, { passive:false })
     backToInputFromPortionsBtn.addEventListener('click', () => {
       pending.proteinPowderG = 0
       showStep(pending.mode === 'profile' ? 'energy' : 'input')
     })
 
+    function syncProteinPowderFromUI(){
+      const readNum = (el, fallback) => {
+        if (!el) return fallback
+        const v = parseFloat(el.value)
+        return (isFinite(v) && v >= 0) ? v : fallback
+      }
+      const clamp0 = (v) => (isFinite(v) && v > 0) ? v : 0
+      const readNumText = (el, fallbackNum, fallbackText) => {
+        if (!el) return { num: fallbackNum, text: fallbackText }
+        const raw = String(el.value ?? '').trim()
+        const v = parseFloat(raw)
+        if (isFinite(v) && v >= 0 && raw !== '') return { num: v, text: raw }
+        return { num: fallbackNum, text: fallbackText }
+      }
+
+      const manualPowderInput = stepManualEl && stepManualEl.classList.contains('active')
+        ? (manualPortionReviewEl && manualPortionReviewEl.querySelector('input.protein-powder'))
+        : null
+      const manualPerGInput = stepManualEl && stepManualEl.classList.contains('active')
+        ? (manualPortionReviewEl && manualPortionReviewEl.querySelector('input.protein-powder-perg'))
+        : null
+
+      if (manualPowderInput || manualPerGInput){
+        const g = Math.round(clamp0(readNum(manualPowderInput, pending?.proteinPowderG || 0)))
+        const perGFallback = (pending?.proteinPowderProteinPerG ?? 0.8)
+        const perGObj = readNumText(manualPerGInput, perGFallback, String(perGFallback))
+        const perG = clamp0(perGObj.num)
+        if (manualPowderInput) manualPowderInput.value = String(g)
+        pending.proteinPowderG = g
+        pending.proteinPowderProteinPerG = perG
+        pending.proteinPowderProteinPerGText = perGObj.text
+        return
+      }
+
+      const g = Math.round(clamp0(readNum(proteinPowderGEl, pending?.proteinPowderG || 0)))
+      const perGFallback = (pending?.proteinPowderProteinPerG ?? 0.8)
+      const perGObj = readNumText(proteinPowderProteinPerGEl, perGFallback, String(perGFallback))
+      const perG = clamp0(perGObj.num)
+      if (proteinPowderGEl) proteinPowderGEl.value = String(g)
+      pending.proteinPowderG = g
+      pending.proteinPowderProteinPerG = perG
+      pending.proteinPowderProteinPerGText = perGObj.text
+    }
+
     adjustPortionsManuallyBtn && adjustPortionsManuallyBtn.addEventListener('click', () => {
+      syncProteinPowderFromUI()
       const targets = pending.targets || pending.result?.targets || targetsForEnergy(pending.kcal, pending.macroTarget, pending.macroMode, { proteinPowderG: pending.proteinPowderG || 0, proteinPowderProteinPerG: pending.proteinPowderProteinPerG }).targets
       renderManualReview(targets)
       showStep('manual')
@@ -2393,11 +2671,11 @@
       v = Math.round(v)
       proteinPowderGEl.value = String(v)
       pending.proteinPowderG = v
-      let perG = parseFloat(proteinPowderProteinPerGEl.value)
+      const raw = String(proteinPowderProteinPerGEl.value ?? '').trim()
+      let perG = parseFloat(raw)
       if (!isFinite(perG) || perG < 0) perG = 0
-      perG = Math.round(perG * 100) / 100
-      proteinPowderProteinPerGEl.value = String(perG)
       pending.proteinPowderProteinPerG = perG
+      pending.proteinPowderProteinPerGText = (raw !== '' && isFinite(parseFloat(raw)) && parseFloat(raw) >= 0) ? raw : String(perG)
       const kcalBase = isFinite(+pending?.kcal) ? +pending.kcal : null
       if (!kcalBase) return
       const mt = pending.macroTarget || { cPct: 55, pPct: 20, fPct: 25 }
@@ -2418,11 +2696,11 @@
         pending.proteinPowderG = v
       }
       if (powderPerGInput){
-        let perG = parseFloat(powderPerGInput.value)
+        const raw = String(powderPerGInput.value ?? '').trim()
+        let perG = parseFloat(raw)
         if (!isFinite(perG) || perG < 0) perG = 0
-        perG = Math.round(perG * 100) / 100
-        powderPerGInput.value = String(perG)
         pending.proteinPowderProteinPerG = perG
+        pending.proteinPowderProteinPerGText = (raw !== '' && isFinite(parseFloat(raw)) && parseFloat(raw) >= 0) ? raw : String(perG)
       }
       const targets = getManualTargets()
       renderManualReview(targets)
@@ -2433,11 +2711,12 @@
       showStep('portions')
     })
     function doStartGame(){
+      syncProteinPowderFromUI()
       const energyInputKcal = pending.kcal
       state.energyLabel = pending.energyLabel
       state.dairyType = pending?.result?.assumptions?.dairyType || 'low'
       const powderG = Math.max(0, Math.round(pending?.proteinPowderG || 0))
-      const powderPerG = Math.max(0, Math.round(((pending?.proteinPowderProteinPerG ?? 0.8) * 100)) / 100)
+      const powderPerG = Math.max(0, (pending?.proteinPowderProteinPerG ?? 0.8))
       const base = pending.targets || targetsForEnergy(
         energyInputKcal,
         pending?.macroTarget,
@@ -2448,6 +2727,7 @@
       state.energyKcal = computeMacrosFromTargets(state.targets, state.dairyType, state.targets[PROTEIN_POWDER_KEY], state.targets.ProteinPowderProteinPerG).totalKcal
       updateGameEnergyUI()
       setTargetsOpen(false)
+      setHomeGetStartedVisible(false)
       setup.style.display = 'none'
       overlay.style.display = 'none'
       reset()
@@ -2474,6 +2754,7 @@
       pauseContinueBtn.style.display = 'none'
       pauseExitBtn.style.display = 'none'
       restartBtn.style.display = 'inline-block'
+      setHomeGetStartedVisible(false)
       state.running = false
       state.paused = false
       setMobileControlsVisible(false)
@@ -2481,16 +2762,18 @@
     })
     function spawnNutrition(t){
       if (t < 1) return
-      const maxActive = 24
+      const mobile = isTouchDevice || (window.matchMedia && window.matchMedia('(max-width: 520px)').matches)
+      const maxActive = mobile ? 14 : 24
       if (state.circles.length > maxActive) return
-      const interval = 0.45 - Math.min(0.35, (state.level-1)*0.08)
+      const intervalBase = mobile ? 0.62 : 0.45
+      const interval = intervalBase - Math.min(mobile ? 0.28 : 0.35, (state.level-1) * (mobile ? 0.06 : 0.08))
       if (t % interval < 0.016) {
-        const spawnCount = 1 + (Math.random() < 0.6 ? 1 : 0)
+        const spawnCount = mobile ? 1 : (1 + (Math.random() < 0.6 ? 1 : 0))
         for (let s=0; s<spawnCount; s++){
           ctx.save()
           ctx.font = 'bold 14px "Zen Maru Gothic", system-ui'
           const y = -30
-          const speed = rand(110, 200)
+          const speed = mobile ? rand(90, 170) : rand(110, 200)
           const counts = { ...state.spawnCounts }
           const eligible = GAME_GROUPS.filter(n=>{
             if (n.key !== PROTEIN_POWDER_KEY) return true
@@ -2526,7 +2809,7 @@
               x, y, w, h,
               vx: rand(-60,60), vy: speed,
               kind: 'powerup',
-              label: 'CARROT',
+              label: '',
               powerType: 'double',
               phase: rand(0, Math.PI*2), swayAmp: rand(12,28),
               headR: 12,
@@ -2655,9 +2938,9 @@
             state.bullets.splice(j,1)
             if (c.kind === 'powerup'){
               if (c.powerType === 'double'){
-                state.doubleShotsLeft = Math.min(12, state.doubleShotsLeft + 3)
+                state.doubleShotsLeft = Math.min(12, state.doubleShotsLeft + 2)
                 state.doubleGlowT = Math.max(state.doubleGlowT, 1.2)
-                showToast('Carrot power! Double shot ×3', 'info', 1400)
+                showToast('Carrot power! Double shot ×2', 'info', 1400)
                 carrotPowerEffect(c.x, c.y)
               } else {
               state.lives = Math.min(9, state.lives + 1)
@@ -2665,6 +2948,10 @@
                 showToast('Extra life +1', 'info', 1200)
                 lifeGainEffect(c.x, c.y)
               }
+              for (let k=0;k<18;k++){
+                state.particles.push({ x:c.x, y:c.y, vx: rand(-220,220), vy: rand(-220,220), life: rand(0.25,0.75), r: rand(1.4,3.4) })
+              }
+              state.circles.splice(i,1)
             } else {
               const key = c.key
               const before = state.consumed[key]
@@ -2691,6 +2978,7 @@
           }
         }
       }
+      let contactHits = 0
       for (let i=state.circles.length-1;i>=0;i--){
         const c = state.circles[i]
         const left = c.x - (c.w||0)/2
@@ -2700,38 +2988,45 @@
         const dx = (p.x < left) ? left - p.x : (p.x > right) ? p.x - right : 0
         const dy = (p.y < top) ? top - p.y : (p.y > bottom) ? p.y - bottom : 0
         const dist2 = dx*dx + dy*dy
-        const pr = p.r*0.8
-        if (dist2 <= pr*pr){
-          if (p.hitCd <= 0){
-            if (c.kind === 'powerup'){
-              if (c.powerType === 'double'){
-                state.doubleShotsLeft = Math.min(12, state.doubleShotsLeft + 3)
-                state.doubleGlowT = Math.max(state.doubleGlowT, 1.2)
-                showToast('Carrot power! Double shot ×3', 'info', 1400)
-                carrotPowerEffect(p.x, p.y)
-              } else {
-                state.lives = Math.min(9, state.lives + 1)
-                updateLivesUI()
-                showToast('Extra life +1', 'info', 1200)
-                lifeGainEffect(p.x, p.y)
-              }
-              state.circles.splice(i,1)
-            } else {
-              state.lives = Math.max(0, state.lives - 1)
-              updateLivesUI()
-              p.hitCd = 1.0
-              p.shakeT = p.shakeD
-              showToast('Life lost!', 'info', 1200)
-              state.circles.splice(i,1)
-              if (state.lives <= 0){
-                state.running = false
-                showEndOverlay()
-                document.getElementById('gameover').textContent = 'No lives left. Game Over'
-                nextBtn.style.display = 'inline-block'
-              }
-            }
+        const mobile = isTouchDevice || (window.matchMedia && window.matchMedia('(max-width: 520px)').matches)
+        const pr = p.r * (mobile ? 0.55 : 0.75)
+        if (dist2 > pr*pr) continue
+
+        if (c.kind === 'powerup'){
+          if (c.powerType === 'double'){
+            state.doubleShotsLeft = Math.min(12, state.doubleShotsLeft + 2)
+            state.doubleGlowT = Math.max(state.doubleGlowT, 1.2)
+            showToast('Carrot power! Double shot ×2', 'info', 1400)
+            carrotPowerEffect(p.x, p.y)
+          } else {
+            state.lives = Math.min(9, state.lives + 1)
+            updateLivesUI()
+            showToast('Extra life +1', 'info', 1200)
+            lifeGainEffect(p.x, p.y)
           }
-          break
+          for (let k=0;k<18;k++){
+            state.particles.push({ x:c.x, y:c.y, vx: rand(-220,220), vy: rand(-220,220), life: rand(0.25,0.75), r: rand(1.4,3.4) })
+          }
+          state.circles.splice(i,1)
+          continue
+        }
+
+        contactHits += 1
+        for (let k=0;k<10;k++){
+          state.particles.push({ x:c.x, y:c.y, vx: rand(-160,160), vy: rand(-160,160), life: rand(0.2,0.7), r: rand(1.2,3.0) })
+        }
+        state.circles.splice(i,1)
+      }
+      if (contactHits > 0){
+        state.lives = Math.max(0, state.lives - contactHits)
+        updateLivesUI()
+        p.shakeT = p.shakeD
+        showToast(contactHits === 1 ? 'Life lost!' : ('Life lost! -' + contactHits), 'info', 1200)
+        if (state.lives <= 0){
+          state.running = false
+          showEndOverlay()
+          document.getElementById('gameover').textContent = 'No lives left. Game Over'
+          nextBtn.style.display = 'inline-block'
         }
       }
       for (let i=state.particles.length-1;i>=0;i--){
@@ -3197,7 +3492,7 @@
         ctx.textBaseline = 'middle'
         ctx.textAlign = 'center'
         ctx.font = '700 14px "Zen Maru Gothic", system-ui'
-        const label = c.label || c.key
+        const label = (typeof c.label === 'string') ? c.label : (c.key || '')
         const textW = ctx.measureText(label).width
         const needW = Math.max(110, textW + 34)
         if (!c.w || needW > c.w) c.w = needW
