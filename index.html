@@ -97,17 +97,20 @@
     }
     #miniTargets{
       display:none;
-      gap:6px;
-      opacity:0.95;
-      white-space:nowrap;
-    }
-    #miniTargets .mt{
-      display:inline-flex;
+      gap:8px;
       align-items:center;
-      gap:4px;
+      opacity:0.92;
+      white-space:nowrap;
+      font-weight:900;
+      font-size:12px;
+      padding:0;
+      border:0;
+      background:transparent;
     }
-    #miniTargets .lbl{ opacity:.88 }
-    #miniTargets .rem{ font-weight:900 }
+    #miniTargets .mt{ display:inline-flex; align-items:center; gap:3px }
+    #miniTargets .lbl{ opacity:.85; letter-spacing:.02em }
+    #miniTargets .num{ font-variant-numeric:tabular-nums }
+    #miniTargets .num.done{ color: rgba(255,77,79,.92) }
     button.badge{ font:inherit; color:inherit }
     #targetsToggle{ display:none }
     .hint{ color:var(--muted); font-weight:900 }
@@ -726,7 +729,7 @@
         <span id="energy" class="badge">Estimated Energy 0 kcal</span>
         <span id="timer" class="badge">Time 0.0s</span>
         <span id="lives" class="badge">Lives 5</span>
-        <span id="miniTargets" class="badge mini" title="Remaining servings"></span>
+        <span id="miniTargets" title="Servings progress"></span>
         <button id="targetsToggle" class="badge" type="button" aria-expanded="false">Servings</button>
       </div>
     </div>
@@ -931,6 +934,7 @@
     const energyEl = document.getElementById('energy')
     const targetsEl = document.getElementById('targets')
     const targetsToggleBtn = document.getElementById('targetsToggle')
+    const topbarEl = document.getElementById('topbar')
     const homeGetStartedBtn = document.getElementById('homeGetStarted')
     const timerEl = document.getElementById('timer')
     const livesEl = document.getElementById('lives')
@@ -1023,6 +1027,7 @@
     const macroCarbProfileLabelEl = document.getElementById('macroCarbProfileLabel')
     const macroTotalProfileEl = document.getElementById('macroTotalProfile')
     let W = 0, H = 0
+    let PLAY_TOP = 0
     let PLAY_BOTTOM = 0
     function computePlayBottom(){
       const touchDevice = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || (navigator.maxTouchPoints || 0) > 0
@@ -1034,6 +1039,16 @@
         return Math.max(0, H - inset)
       }
       return H
+    }
+    function computePlayTop(){
+      const touchDevice = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || (navigator.maxTouchPoints || 0) > 0
+      const mobile = window.matchMedia && window.matchMedia('(max-width: 520px)').matches
+      if (touchDevice && mobile && topbarEl){
+        const r = topbarEl.getBoundingClientRect()
+        const inset = Math.max(0, Math.round(r.bottom)) + 8
+        return Math.min(H, inset)
+      }
+      return 0
     }
     function resize() {
       const dpr = Math.max(1, window.devicePixelRatio || 1)
@@ -1049,6 +1064,7 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       W = w; H = h
       PLAY_BOTTOM = computePlayBottom()
+      PLAY_TOP = computePlayTop()
     }
     resize()
     window.addEventListener('resize', resize)
@@ -1907,6 +1923,7 @@
       if (!mobileControlsEl) return
       mobileControlsEl.style.display = on ? 'flex' : 'none'
       PLAY_BOTTOM = computePlayBottom()
+      PLAY_TOP = computePlayTop()
     }
     function updateControlsHint(){
       if (!controlsHintEl) return
@@ -2054,8 +2071,8 @@
       energyEl.textContent = `Energy ${macros.totalKcal} / ${formatKcal(state.energyLabel, state.energyKcal)} kcal`
       updateMiniTargetsUI()
     }
-    function formatRemain(x){
-      const v = Math.max(0, Math.round(x*2)/2)
+    function formatHalf(x){
+      const v = Math.round(x*2)/2
       return Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(1)
     }
     function updateMiniTargetsUI(){
@@ -2063,19 +2080,21 @@
       if (!el) return
       const tg = state.targets || {}
       const cm = state.consumed || {}
-      const remainG = (tg['Grains']||0) - (cm['Grains']||0)
-      const remainP = ((tg['Proteins']||0)+(tg['Proteins_medium']||0)) - ((cm['Proteins']||0)+(cm['Proteins_medium']||0))
-      const remainD = (tg['Dairy']||0) - (cm['Dairy']||0)
-      const remainV = (tg['Vegetables']||0) - (cm['Vegetables']||0)
-      const remainF = (tg['Fruits']||0) - (cm['Fruits']||0)
-      const remainO = (tg['Oils and Nuts']||0) - (cm['Oils and Nuts']||0)
+      const curG = (cm['Grains']||0), tarG = (tg['Grains']||0)
+      const curP = (cm['Proteins']||0) + (cm['Proteins_medium']||0)
+      const tarP = (tg['Proteins']||0) + (tg['Proteins_medium']||0)
+      const curD = (cm['Dairy']||0), tarD = (tg['Dairy']||0)
+      const curV = (cm['Vegetables']||0), tarV = (tg['Vegetables']||0)
+      const curF = (cm['Fruits']||0), tarF = (tg['Fruits']||0)
+      const curO = (cm['Oils and Nuts']||0), tarO = (tg['Oils and Nuts']||0)
+      const done = (cur, tar) => (tar > 0 && cur >= tar - 1e-9)
       const parts = [
-        `<span class="mt"><span class="lbl">G</span><span class="rem">${formatRemain(remainG)}</span></span>`,
-        `<span class="mt"><span class="lbl">P</span><span class="rem">${formatRemain(remainP)}</span></span>`,
-        `<span class="mt"><span class="lbl">D</span><span class="rem">${formatRemain(remainD)}</span></span>`,
-        `<span class="mt"><span class="lbl">V</span><span class="rem">${formatRemain(remainV)}</span></span>`,
-        `<span class="mt"><span class="lbl">F</span><span class="rem">${formatRemain(remainF)}</span></span>`,
-        `<span class="mt"><span class="lbl">O</span><span class="rem">${formatRemain(remainO)}</span></span>`
+        `<span class="mt"><span class="lbl">G</span><span class="num${done(curG,tarG)?' done':''}">${formatHalf(curG)}/${formatHalf(tarG)}</span></span>`,
+        `<span class="mt"><span class="lbl">P</span><span class="num${done(curP,tarP)?' done':''}">${formatHalf(curP)}/${formatHalf(tarP)}</span></span>`,
+        `<span class="mt"><span class="lbl">D</span><span class="num${done(curD,tarD)?' done':''}">${formatHalf(curD)}/${formatHalf(tarD)}</span></span>`,
+        `<span class="mt"><span class="lbl">V</span><span class="num${done(curV,tarV)?' done':''}">${formatHalf(curV)}/${formatHalf(tarV)}</span></span>`,
+        `<span class="mt"><span class="lbl">F</span><span class="num${done(curF,tarF)?' done':''}">${formatHalf(curF)}/${formatHalf(tarF)}</span></span>`,
+        `<span class="mt"><span class="lbl">O</span><span class="num${done(curO,tarO)?' done':''}">${formatHalf(curO)}/${formatHalf(tarO)}</span></span>`
       ]
       el.innerHTML = parts.join(' ')
     }
@@ -2828,7 +2847,7 @@
         for (let s=0; s<spawnCount; s++){
           ctx.save()
           ctx.font = 'bold 14px "Zen Maru Gothic", system-ui'
-          const y = -30
+          const y = (PLAY_TOP > 0 ? (PLAY_TOP - 30) : -30)
           const speed = mobile ? rand(90, 170) : rand(110, 200)
           const counts = { ...state.spawnCounts }
           const eligible = GAME_GROUPS.filter(n=>{
