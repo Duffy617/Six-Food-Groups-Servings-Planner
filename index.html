@@ -1321,7 +1321,10 @@
       const lockStrictMacro = !!(external && external._lockStrictMacro)
       const autoPowderUsed = !!(external && external._autoPowderUsed)
       const isHighProteinTarget = macroTarget.pPct >= 35
-      if (!autoPowderUsed && !lockStrictMacro && proteinPowderG === 0 && isHighProteinTarget && proteinPowderProteinPerG > 0){
+      const lowFatTargetEarly = macroTarget.fPct < 20
+      const strictMacroByTarget = (macroTarget.pPct >= 25 && lowFatTargetEarly && proteinPowderProteinPerG > 0)
+      const shouldAutoUsePowderForMacro = isHighProteinTarget || strictMacroByTarget
+      if (!autoPowderUsed && !lockStrictMacro && proteinPowderG === 0 && shouldAutoUsePowderForMacro && proteinPowderProteinPerG > 0){
         const thresholds = [0.5, 1, 2, 5]
         const desiredProteinG = Math.max(0, (baseKcalInput * (macroTarget.pPct/100)) / 4)
         const hiProteinG = Math.min(200, desiredProteinG)
@@ -1358,7 +1361,8 @@
         }
         if (bestRes) return bestRes
       }
-      const servingStep = lockStrictMacro ? 0.25 : 0.5
+      const strictServingGranularity = lockStrictMacro || strictMacroByTarget
+      const servingStep = strictServingGranularity ? 0.25 : 0.5
       const roundServing = (n) => Math.round(n / servingStep) * servingStep
       const FOOD = {
         grains: { c:15, p:2, f:0, kcal:70 },
@@ -1432,7 +1436,7 @@
         : { grains:[0, 35], proteins:[0, 16], dairy:[0, 3], veg:[0, 10], fruit:[0, 8], oils:[3, 16] })
       const strictMaxAbs = Math.max(0, isFinite(+external?._strictMaxAbs) ? (+external._strictMaxAbs) : 0.5)
       let energyTolAbsKcal = lockStrictMacro ? 60 : 40
-      let macroMaxAbsPct = lockStrictMacro ? strictMaxAbs : 1.0
+      let macroMaxAbsPct = lockStrictMacro ? strictMaxAbs : (strictMacroByTarget ? strictMaxAbs : 1.0)
       const strictMacroMaxAbsPct = macroMaxAbsPct
       let minE = kcal - energyTolAbsKcal
       let maxE = kcal + energyTolAbsKcal
@@ -1902,7 +1906,8 @@
         }
         return best
       }
-      const triesScale = severeImbalance ? 6 : (lowFatTarget ? 3 : 1)
+      let triesScale = severeImbalance ? 6 : (lowFatTarget ? 3 : 1)
+      if (strictMacroByTarget && !severeImbalance) triesScale = Math.max(triesScale, 6)
       const useExhaustive = (isMacroTargetTypical && !severeImbalance && kcal >= 1200 && kcal <= 2800)
       let best = useExhaustive
         ? (exhaustiveSearch(strictRanges, false) || exhaustiveSearch(strictRanges, true))
@@ -1932,14 +1937,26 @@
         }
       }
       if (!best && !lockStrictMacro){
-        setConstraints(240, 3)
-        adjustments.push('Relaxed tolerances to find a feasible solution')
-        best = searchBest(fallbackRanges, 80) || searchBest(relaxedRanges, 80) || searchBest(strictRanges, 80)
+        if (strictMacroByTarget){
+          setConstraints(350, strictMacroMaxAbsPct)
+          adjustments.push('Prioritized macro ratio accuracy by widening energy tolerance')
+          best = searchBest(strictRanges, Math.round(420 * triesScale)) || searchBest(relaxedRanges, Math.round(420 * triesScale)) || searchBest(fallbackRanges, Math.round(420 * triesScale))
+        } else {
+          setConstraints(240, 3)
+          adjustments.push('Relaxed tolerances to find a feasible solution')
+          best = searchBest(fallbackRanges, 80) || searchBest(relaxedRanges, 80) || searchBest(strictRanges, 80)
+        }
       }
       if (!best && !lockStrictMacro){
-        setConstraints(350, 6)
-        adjustments.push('Further relaxed tolerances to find any feasible solution')
-        best = searchBest(fallbackRanges, 120) || searchBest(relaxedRanges, 120) || searchBest(strictRanges, 120)
+        if (strictMacroByTarget){
+          setConstraints(500, Math.max(strictMacroMaxAbsPct, 1.0))
+          adjustments.push('Macro ratio may be infeasible; searching closest achievable ratio')
+          best = searchBest(fallbackRanges, Math.round(520 * triesScale)) || searchBest(relaxedRanges, Math.round(520 * triesScale)) || searchBest(strictRanges, Math.round(520 * triesScale))
+        } else {
+          setConstraints(350, 6)
+          adjustments.push('Further relaxed tolerances to find any feasible solution')
+          best = searchBest(fallbackRanges, 120) || searchBest(relaxedRanges, 120) || searchBest(strictRanges, 120)
+        }
       }
       if (!best){
         const baseGrains = roundServing(Math.max(0, (carbTargetG - 1*FOOD.dairyLow.c - 3*FOOD.veg.c - 2*FOOD.fruit.c) / FOOD.grains.c))
@@ -1949,7 +1966,7 @@
         best = { g:baseGrains, p:baseProteins, d:1, v:3, r:2, o:baseOils, t, sse:Infinity, energyGap:Math.abs(t.totalE-kcal), exceed:0 }
         adjustments.push('Used heuristic fallback; tolerances may be exceeded')
       }
-      best = neighborhoodRefine(best, strictRanges, (isMacroTargetTypical && !severeImbalance ? 3 : 2)) || best
+      best = neighborhoodRefine(best, strictRanges, (strictMacroByTarget && !severeImbalance ? 4 : (isMacroTargetTypical && !severeImbalance ? 3 : 2))) || best
       best = neighborhoodRefine(best, relaxedRanges, 2) || best
       const tfin = best.t || totals(best.g, best.p, best.d, best.v, best.r, best.o)
       const finalAbs = macroAbsStats(tfin)
