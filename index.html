@@ -1163,8 +1163,8 @@
         'toast.ratioInvalid': 'Please enter valid ratio numbers.',
         'toast.zoomReset': 'If your mobile screen is zoomed, please reset to 100% to avoid visual issues.',
         'toast.suppFillAllFields': 'Please fill out all supplement fields before adding a new item.',
-        'toast.manualServingRoundedOne': 'Note: {item} servings were rounded to {value}.',
-        'toast.manualServingRoundedMany': 'Note: The following servings were rounded: {items}.',
+        'toast.manualServingRoundedOne': 'Note: Servings must be in 0.5 increments, so {item} was rounded to {value}.',
+        'toast.manualServingRoundedMany': 'Note: Servings must be in 0.5 increments, so the following were rounded: {items}.',
       },
       'zh-Hant': {
         'app.title': '六大類食物份數規劃',
@@ -1282,8 +1282,8 @@
         'toast.ratioInvalid': '請輸入有效的比例數值',
         'toast.zoomReset': '若手機畫面有縮放，請先重設為 100% 以避免顯示異常。',
         'toast.suppFillAllFields': '請先填完營養補充品的所有欄位，才能新增項目。',
-        'toast.manualServingRoundedOne': '提醒：{item} 份數已自動四捨五入為 {value} 份。',
-        'toast.manualServingRoundedMany': '提醒：以下類別份數已自動四捨五入：{items}。',
+        'toast.manualServingRoundedOne': '提醒：份數只能以 0.5 份為單位，所以 {item} 份數已自動四捨五入為 {value} 份。',
+        'toast.manualServingRoundedMany': '提醒：份數只能以 0.5 份為單位，所以以下類別份數已自動四捨五入：{items}。',
       }
     }
     let currentLang = 'en'
@@ -3588,7 +3588,8 @@
         showToast(t('toast.manualServingRoundedOne', { item: rounded[0].label, value: rounded[0].value }), 'info', 4200)
       } else if (rounded.length > 1){
         const sep = currentLang === 'zh-Hant' ? '、' : ', '
-        showToast(t('toast.manualServingRoundedMany', { items: rounded.map(x => x.label).join(sep) }), 'info', 5200)
+        const items = rounded.map(x => currentLang === 'zh-Hant' ? `${x.label}→${x.value}` : `${x.label}→${x.value}`).join(sep)
+        showToast(t('toast.manualServingRoundedMany', { items }), 'info', 5200)
       }
       renderManualReview(targets)
     })
