@@ -24,8 +24,8 @@
       --textStrong:#2c2f36;
       --muted:rgba(58,61,69,.64);
       --muted2:rgba(58,61,69,.46);
-      --brand:#4a4d55;
-      --brand2:#6a6e78;
+      --brand:#5a4040;
+      --brand2:#7a5c5c;
       --brandInk:#ffffff;
       --danger:#b85a5e;
       --sand:#9aa0ab;
@@ -365,14 +365,26 @@
       border-color:rgba(72,85,72,.85);
       box-shadow:0 0 0 4px rgba(72,85,72,.16);
     }
-    #adjustPortionsManually{
+    #adjustPortionsManually,
+    #nextFromInput,
+    #nextToPortionsFromEnergy{
       border:1px solid rgba(90,72,72,.45);
       background:#e6dcdc;
       color:#3a2a2a;
+      box-shadow:none;
     }
-    #adjustPortionsManually:hover{
+    #adjustPortionsManually:hover,
+    #nextFromInput:hover,
+    #nextToPortionsFromEnergy:hover{
       border-color:rgba(90,72,72,.70);
       background:#d9cbcb;
+      filter:none;
+    }
+    #nextFromInput:disabled,
+    #nextToPortionsFromEnergy:disabled{
+      background:#efe8e8;
+      border-color:rgba(90,72,72,.28);
+      color:rgba(58,42,42,.55);
     }
     #manualEstimate{
       border:1px solid rgba(0,0,0,.22);
@@ -510,7 +522,7 @@
       border:0;
       background:linear-gradient(180deg, var(--brand2), var(--brand));
       color:var(--brandInk);
-      box-shadow:0 10px 20px rgba(74,77,85,.22);
+      box-shadow:0 10px 20px rgba(90,64,64,.22);
     }
     .btn.primary:hover{ filter:brightness(1.12); background:linear-gradient(180deg, var(--brand2), var(--brand)) }
     .review{
@@ -743,7 +755,7 @@
             <span class="lede-en">Plan daily servings from macros — in seconds.</span>
           </p>
           <div class="home-lang">
-            <button class="btn primary lang-btn" id="chooseZh" type="button">中文</button>
+            <button class="btn lang-btn" id="chooseZh" type="button">中文</button>
             <button class="btn lang-btn" id="chooseEn" type="button">English</button>
           </div>
         </div>
