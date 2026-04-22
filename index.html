@@ -12,29 +12,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg0:#0b0f1a;
-      --bg1:#0d1020;
-      --panel:rgba(16,20,34,.68);
-      --panel2:rgba(10,14,28,.82);
-      --border:rgba(255,255,255,.12);
-      --border2:rgba(255,255,255,.16);
-      --text:#eef2ff;
-      --muted:rgba(238,242,255,.70);
-      --brand:#2f3b52;
-      --brand2:#3a4a68;
-      --danger:#ff4d4f;
-      --sand:#d7c892;
-      --sand2:#b9ad7a;
+      --bg0:#ffffff;
+      --bg1:#f5f6f8;
+      --paper:#ffffff;
+      --paperSoft:#f7f8fa;
+      --panel:rgba(255,255,255,.98);
+      --panel2:rgba(247,248,250,.98);
+      --border:rgba(0,0,0,.08);
+      --border2:rgba(0,0,0,.16);
+      --text:#3a3d45;
+      --textStrong:#2c2f36;
+      --muted:rgba(58,61,69,.64);
+      --muted2:rgba(58,61,69,.46);
+      --brand:#4a4d55;
+      --brand2:#6a6e78;
+      --brandInk:#ffffff;
+      --danger:#b85a5e;
+      --sand:#9aa0ab;
+      --sand2:#5c6370;
+      --sandSoft:rgba(0,0,0,.05);
+      --sandSoftStrong:rgba(0,0,0,.10);
+      --accent-blue:rgba(106,124,160,1);
+      --accent-green:rgba(126,159,104,1);
+      --accent-red:rgba(196,119,108,1);
+      --accent-warm:rgba(120,120,128,1);
       --radius:14px;
-      --shadow:0 18px 50px rgba(0,0,0,.55);
-      --scrollTrack:#121826;
-      --scrollThumb:#3a4052;
-      --scrollThumbHover:#4b5266;
+      --shadow:0 18px 44px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+      --scrollTrack:#eef0f3;
+      --scrollThumb:#c4c8cf;
+      --scrollThumbHover:#9aa0ab;
       --font:'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
-      --fs-base:14px;
+      --fs-base:12px;
       --fs-sm:12px;
-      --fs-xs:11px;
-      --fw:700;
+      --fs-xs:12px;
+      --fw:600;
     }
     html[lang="zh-Hant"]{
       --font:'Noto Sans TC', ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
@@ -44,8 +55,8 @@
       height:100%;
       overflow:hidden;
       background:
-        radial-gradient(1200px 700px at 12% 18%, rgba(76,125,255,.16), transparent 60%),
-        radial-gradient(900px 600px at 90% 80%, rgba(88,150,130,.10), transparent 62%),
+        radial-gradient(1200px 700px at 12% 18%, rgba(0,0,0,.03), transparent 60%),
+        radial-gradient(900px 600px at 90% 80%, rgba(0,0,0,.02), transparent 62%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       color:var(--text);
       font-family:var(--font);
@@ -73,14 +84,14 @@
       display:none;
       align-items:center;
       justify-content:center;
-      background:rgba(3,5,10,.78);
+      background:rgba(0,0,0,.14);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       z-index:40;
       padding:calc(18px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
     }
     #languageCover .panel{
-      background:linear-gradient(135deg, rgba(16,20,34,.95) 0%, rgba(11,15,26,.96) 100%);
+      background:linear-gradient(135deg, #ffffff 0%, var(--paperSoft) 100%);
       border:1px solid var(--border);
       border-radius:20px;
       padding:22px 22px;
@@ -92,7 +103,7 @@
       color:var(--muted);
       font-weight:var(--fw);
       margin-top:10px;
-      font-size:14px;
+      font-size:var(--fs-base);
       letter-spacing:.01em;
     }
 
@@ -102,14 +113,14 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background:rgba(3,5,10,.70);
+      background:rgba(0,0,0,.10);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       z-index:20;
       padding:calc(18px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
     }
     #setup .panel{
-      background:linear-gradient(135deg, rgba(16,20,34,.95) 0%, rgba(11,15,26,.96) 100%);
+      background:linear-gradient(135deg, #ffffff 0%, var(--paperSoft) 100%);
       border:1px solid var(--border);
       border-radius:20px;
       padding:22px 22px;
@@ -119,201 +130,159 @@
       box-shadow:var(--shadow);
     }
     #setup[data-step="home"] .panel{
-      width:min(980px, 100%);
-      padding:44px 42px;
+      width:min(720px, 100%);
+      padding:72px 56px 60px;
       overflow:hidden;
-      background:
-        radial-gradient(1100px 680px at 88% 18%, rgba(76,125,255,.26), transparent 64%),
-        radial-gradient(900px 640px at 70% 86%, rgba(88,150,130,.18), transparent 64%),
-        radial-gradient(800px 520px at 14% 42%, rgba(215,200,146,.10), transparent 64%),
-        linear-gradient(135deg, rgba(16,20,34,.95) 0%, rgba(11,15,26,.96) 100%);
+      background:#ffffff;
+      border:1px solid var(--border);
+      box-shadow:0 24px 60px rgba(0,0,0,.06);
     }
     #setup[data-step="home"] .card-header{ display:none }
     #setup[data-step="input"] .card-header .btn-row{ display:none }
-    .home-splash{
-      position:relative;
-      min-height:360px;
-      display:grid;
-      grid-template-columns:1fr;
-      align-content:center;
-      gap:18px;
-      padding:6px 6px 10px;
-    }
-    .home-left{ max-width:620px }
-    .home-subtitle{
-      font-size:14px;
-      font-weight:var(--fw);
-      color:rgba(238,242,255,.78);
-      line-height:1.55;
-      max-width:56ch;
-    }
-    .lang-card{
-      background:rgba(10,14,28,.52);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:18px;
-      padding:18px 18px 16px;
-      box-shadow:0 22px 70px rgba(0,0,0,.28);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      max-width:420px;
-    }
-    .lang-title{
-      font-size:13px;
-      color:rgba(238,242,255,.72);
-      letter-spacing:.02em;
-      font-weight:var(--fw);
-      margin-bottom:12px;
-    }
-    .lang-actions{
+    .home-journal{
       display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+      flex-direction:column;
       align-items:center;
+      text-align:center;
+      gap:0;
     }
-    .home-splash .lang-actions .btn{
-      flex:1 1 140px;
-      min-width:140px;
-      border-radius:14px;
-      padding:12px 14px;
+    .home-logo{
+      display:block;
+      width:140px;
+      height:auto;
+      margin:0 auto 22px;
+      user-select:none;
+      -webkit-user-drag:none;
     }
-    .home-title-stack{
-      display:grid;
-      gap:8px;
-      align-content:start;
+    @media (max-width: 540px){
+      .home-logo{ width:120px; margin-bottom:18px }
     }
-    .home-title.zh{
-      font-size:clamp(40px, 5.2vw, 56px);
-      line-height:1.10;
-      font-weight:var(--fw);
-      letter-spacing:-.02em;
-      text-transform:none;
-      background:linear-gradient(180deg, rgba(255,255,255,.96) 0%, rgba(214,224,255,.82) 85%);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
+    .home-eyebrow{
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.34em;
+      text-transform:uppercase;
+      color:var(--sand2);
+      margin:0 0 24px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+    }
+    .home-eyebrow::before,
+    .home-eyebrow::after{
+      content:"";
       display:inline-block;
-      padding-bottom:4px;
+      width:18px;
+      height:1px;
+      background:var(--sand2);
+      opacity:.55;
     }
-    .home-title.en{
-      font-size:clamp(18px, 2.2vw, 24px);
-      line-height:1.25;
-      font-weight:var(--fw);
+    .home-title-zh{
+      font-size:clamp(30px, 4.2vw, 42px);
+      font-weight:700;
       letter-spacing:.02em;
-      color:rgba(238,242,255,.82);
+      color:var(--textStrong);
+      margin:0 0 10px;
+      line-height:1.18;
     }
-    .home-splash .btn.primary{
-      width:fit-content;
-      min-width:170px;
-      padding:12px 18px;
-      border-radius:14px;
-      box-shadow:0 16px 44px rgba(58,74,104,.30);
+    .home-title-en{
+      font-size:clamp(12px, 1.3vw, 14px);
+      font-weight:600;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin:0 0 24px;
     }
-    @media (min-width: 861px){
-      .home-splash{
-        padding:6px 2px;
-        grid-template-columns:1.25fr .9fr;
-        align-items:center;
-        justify-content:space-between;
-      }
-      .home-right{ justify-self:end }
-      .home-splash::before{
-        content:"";
-        position:absolute;
-        left:-140px;
-        top:-120px;
-        width:560px;
-        height:560px;
-        border-radius:999px;
-        background:
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640' viewBox='0 0 640 640'%3E%3Cg fill='none' stroke='white' stroke-opacity='.34' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M320 98c-62 0-112 50-112 112 0 26 9 50 24 70'/%3E%3Cpath d='M344 104c62 6 110 58 104 122-3 31-18 58-40 78'/%3E%3Cpath d='M236 312c24 38 66 64 114 64 50 0 94-28 118-70'/%3E%3Cpath d='M206 284c-18 44-10 92 20 130'/%3E%3Cpath d='M452 318c12 42 6 86-18 120'/%3E%3Cpath d='M254 446c18 18 40 30 66 36'/%3E%3Cpath d='M396 482c26-8 48-22 66-42'/%3E%3Cpath d='M176 340c10 6 22 10 34 10'/%3E%3Cpath d='M466 350c12 0 24-4 34-10'/%3E%3Cpath d='M196 246c10-2 20-8 28-16'/%3E%3Cpath d='M444 230c8 10 18 16 28 18'/%3E%3Cpath d='M308 170c-8 16-8 34 0 50 10 20 40 26 60 10 20-16 20-44 0-60-18-14-42-14-60 0z'/%3E%3Cpath d='M326 160c2-12 10-22 24-28'/%3E%3Cpath d='M146 430c18-36 52-54 84-40 34 14 46 56 24 92-22 36-62 50-96 30-34-20-40-60-12-82z'/%3E%3Cpath d='M186 420c-14 30-14 56 0 82'/%3E%3Cpath d='M146 450c8 8 18 14 30 18'/%3E%3Cpath d='M224 424c-8 10-18 18-32 22'/%3E%3Cpath d='M430 154h30l-6 14v18c0 6 4 12 10 14v110c0 14-12 26-26 26h-8c-14 0-26-12-26-26V200c6-2 10-8 10-14v-18z'/%3E%3Cpath d='M432 154c4-16 18-28 40-30'/%3E%3Cpath d='M430 240c12 6 24 6 38 0'/%3E%3Cpath d='M444 124c14-16 36-22 58-10 4 26-10 46-34 52-18 4-34-2-44-16z'/%3E%3Cpath d='M488 118c-12 10-26 14-44 14'/%3E%3Cpath d='M286 520c-10-22-34-34-58-26-26 10-36 40-24 66 12 26 42 38 68 24 12-6 18-14 24-14s12 8 24 14c26 14 56 2 68-24 12-26 2-56-24-66-24-8-48 4-58 26z'/%3E%3Cpath d='M322 482c6-12 16-20 30-24'/%3E%3Cpath d='M286 482c-6-12-16-20-30-24'/%3E%3Cpath d='M236 154c18-30 18-70 0-102'/%3E%3Cpath d='M236 72c-10-4-18-10-24-18'/%3E%3Cpath d='M236 94c-10-4-18-10-24-18'/%3E%3Cpath d='M236 116c-10-4-18-10-24-18'/%3E%3Cpath d='M236 72c10-4 18-10 24-18'/%3E%3Cpath d='M236 94c10-4 18-10 24-18'/%3E%3Cpath d='M236 116c10-4 18-10 24-18'/%3E%3Cpath d='M496 404c-32-26-82-20-110 0 28 26 78 32 110 0z'/%3E%3Cpath d='M496 404l24-18'/%3E%3Cpath d='M496 404l24 18'/%3E%3Ccircle cx='472' cy='404' r='3'/%3E%3Cpath d='M124 204l10-12 10 12-10 12z'/%3E%3Cpath d='M520 274l8-10 8 10-8 10z'/%3E%3Cpath d='M392 72l8-10 8 10-8 10z'/%3E%3Cpath d='M520 520l10-12 10 12-10 12z'/%3E%3Cpath d='M92 522l8-10 8 10-8 10z'/%3E%3C/g%3E%3C/svg%3E") no-repeat 26% 34%/520px 520px,
-          radial-gradient(560px 560px at 26% 34%, rgba(255,255,255,.07), transparent 62%),
-          radial-gradient(520px 520px at 72% 66%, rgba(76,125,255,.10), transparent 62%),
-          radial-gradient(560px 560px at 70% 20%, rgba(215,200,146,.10), transparent 64%);
-        opacity:.56;
-        pointer-events:none;
-      }
-      .home-splash::after{ display:none }
-      .home-title br{ display:none }
+    .home-rule{
+      width:44px;
+      height:2px;
+      background:linear-gradient(90deg, transparent, var(--sand), transparent);
+      margin:0 0 26px;
+    }
+    .home-lede{
+      font-size:14px;
+      font-weight:500;
+      line-height:1.75;
+      color:var(--text);
+      max-width:44ch;
+      margin:0 0 36px;
+    }
+    .home-lede .lede-en{
+      display:block;
+      margin-top:6px;
+      font-size:12px;
+      font-style:italic;
+      color:var(--muted);
+      letter-spacing:.01em;
+    }
+    .home-lang{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+      width:100%;
+    }
+    .home-lang .lang-btn{
+      flex:0 0 auto;
+      min-width:150px;
+      padding:13px 26px;
+      border-radius:999px;
+      font-weight:600;
+      letter-spacing:.04em;
+      font-size:14px;
     }
     @media (max-width: 540px){
       #setup[data-step="home"] .panel{
         width:min(520px, 100%);
-        padding:30px 18px;
+        padding:52px 24px 44px;
         border-radius:18px;
       }
-      .home-splash{
-        min-height:280px;
-        justify-items:center;
-        text-align:center;
-        gap:16px;
-        padding:6px 0;
-      }
-      .home-left{ max-width:100% }
-      .lang-card{ width:100% }
-      .home-title.zh{
-        font-size:clamp(34px, 9.2vw, 44px);
-        letter-spacing:-.01em;
-      }
-      .home-splash::before{
-        content:"";
-        position:absolute;
-        inset:-18px -18px auto -18px;
-        height:260px;
-        background:
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640' viewBox='0 0 640 640'%3E%3Cg fill='none' stroke='white' stroke-opacity='.34' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M320 98c-62 0-112 50-112 112 0 26 9 50 24 70'/%3E%3Cpath d='M344 104c62 6 110 58 104 122-3 31-18 58-40 78'/%3E%3Cpath d='M236 312c24 38 66 64 114 64 50 0 94-28 118-70'/%3E%3Cpath d='M206 284c-18 44-10 92 20 130'/%3E%3Cpath d='M452 318c12 42 6 86-18 120'/%3E%3Cpath d='M254 446c18 18 40 30 66 36'/%3E%3Cpath d='M396 482c26-8 48-22 66-42'/%3E%3Cpath d='M176 340c10 6 22 10 34 10'/%3E%3Cpath d='M466 350c12 0 24-4 34-10'/%3E%3Cpath d='M196 246c10-2 20-8 28-16'/%3E%3Cpath d='M444 230c8 10 18 16 28 18'/%3E%3Cpath d='M308 170c-8 16-8 34 0 50 10 20 40 26 60 10 20-16 20-44 0-60-18-14-42-14-60 0z'/%3E%3Cpath d='M326 160c2-12 10-22 24-28'/%3E%3Cpath d='M146 430c18-36 52-54 84-40 34 14 46 56 24 92-22 36-62 50-96 30-34-20-40-60-12-82z'/%3E%3Cpath d='M186 420c-14 30-14 56 0 82'/%3E%3Cpath d='M146 450c8 8 18 14 30 18'/%3E%3Cpath d='M224 424c-8 10-18 18-32 22'/%3E%3Cpath d='M430 154h30l-6 14v18c0 6 4 12 10 14v110c0 14-12 26-26 26h-8c-14 0-26-12-26-26V200c6-2 10-8 10-14v-18z'/%3E%3Cpath d='M432 154c4-16 18-28 40-30'/%3E%3Cpath d='M430 240c12 6 24 6 38 0'/%3E%3Cpath d='M444 124c14-16 36-22 58-10 4 26-10 46-34 52-18 4-34-2-44-16z'/%3E%3Cpath d='M488 118c-12 10-26 14-44 14'/%3E%3Cpath d='M286 520c-10-22-34-34-58-26-26 10-36 40-24 66 12 26 42 38 68 24 12-6 18-14 24-14s12 8 24 14c26 14 56 2 68-24 12-26 2-56-24-66-24-8-48 4-58 26z'/%3E%3Cpath d='M322 482c6-12 16-20 30-24'/%3E%3Cpath d='M286 482c-6-12-16-20-30-24'/%3E%3Cpath d='M236 154c18-30 18-70 0-102'/%3E%3Cpath d='M236 72c-10-4-18-10-24-18'/%3E%3Cpath d='M236 94c-10-4-18-10-24-18'/%3E%3Cpath d='M236 116c-10-4-18-10-24-18'/%3E%3Cpath d='M236 72c10-4 18-10 24-18'/%3E%3Cpath d='M236 94c10-4 18-10 24-18'/%3E%3Cpath d='M236 116c10-4 18-10 24-18'/%3E%3Cpath d='M496 404c-32-26-82-20-110 0 28 26 78 32 110 0z'/%3E%3Cpath d='M496 404l24-18'/%3E%3Cpath d='M496 404l24 18'/%3E%3Ccircle cx='472' cy='404' r='3'/%3E%3Cpath d='M124 204l10-12 10 12-10 12z'/%3E%3Cpath d='M520 274l8-10 8 10-8 10z'/%3E%3Cpath d='M392 72l8-10 8 10-8 10z'/%3E%3Cpath d='M520 520l10-12 10 12-10 12z'/%3E%3Cpath d='M92 522l8-10 8 10-8 10z'/%3E%3C/g%3E%3C/svg%3E") no-repeat 50% 14%/320px 320px,
-          radial-gradient(220px 220px at 14% 30%, rgba(76,125,255,.20), transparent 60%),
-          radial-gradient(240px 240px at 88% 40%, rgba(255,77,79,.14), transparent 62%),
-          radial-gradient(280px 280px at 48% 92%, rgba(215,200,146,.10), transparent 62%);
-        opacity:.62;
-        pointer-events:none;
-      }
-      .home-splash .btn.primary{
-        width:100%;
-        max-width:320px;
-      }
-      .home-splash::after{ display:none }
+      .home-title-zh{ font-size:clamp(28px, 7vw, 36px) }
+      .home-lang{ flex-direction:column; align-items:stretch }
+      .home-lang .lang-btn{ width:100%; max-width:300px; margin:0 auto }
     }
     .card-header{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px }
-    .card-header .title{ font-size:20px; font-weight:var(--fw) }
+    .card-header .title{ font-size:14px; font-weight:700; color:var(--textStrong); letter-spacing:.01em }
     .card-header .subtitle{ font-size:var(--fs-sm); color:var(--muted) }
     .mode-row{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap }
     .radio{
       display:flex;
       align-items:center;
       gap:10px;
-      background:rgba(255,255,255,.05);
+      background:var(--paper);
       border:1px solid var(--border);
       padding:10px 12px;
       border-radius:12px;
       cursor:pointer;
       user-select:none;
-      font-size:14px;
+      font-size:var(--fs-base);
+      color:var(--text);
     }
     .radio.energy-mode{
-      background:rgba(215,200,146,.14);
-      border-color:rgba(215,200,146,.28);
+      background:#f7f8fa;
+      border-color:rgba(0,0,0,.12);
     }
     .radio.energy-mode.is-checked{
-      background:rgba(215,200,146,.26);
-      border-color:rgba(215,200,146,.46);
-      box-shadow:0 0 0 4px rgba(215,200,146,.10);
+      background:#ffffff;
+      border-color:rgba(74,77,85,.85);
+      box-shadow:0 0 0 4px rgba(74,77,85,.10);
     }
     .radio.energy-mode input:checked{
-      background:var(--sand);
-      border-color:var(--sand);
+      background:var(--brand);
+      border-color:var(--brand);
     }
     .radio.macro-mode{
-      background:rgba(215,200,146,.14);
-      border-color:rgba(215,200,146,.28);
+      background:#f7f8fa;
+      border-color:rgba(0,0,0,.12);
     }
     .radio.macro-mode.is-checked{
-      background:rgba(215,200,146,.26);
-      border-color:rgba(215,200,146,.46);
-      box-shadow:0 0 0 4px rgba(215,200,146,.10);
+      background:#ffffff;
+      border-color:rgba(74,77,85,.85);
+      box-shadow:0 0 0 4px rgba(74,77,85,.10);
     }
     .radio.macro-mode input:checked{
-      background:var(--sand);
-      border-color:var(--sand);
+      background:var(--brand);
+      border-color:var(--brand);
     }
     .radio input{
       -webkit-appearance:none;
@@ -321,43 +290,43 @@
       width:16px;
       height:16px;
       border-radius:999px;
-      border:2px solid rgba(255,255,255,.70);
-      background:transparent;
+      border:2px solid rgba(0,0,0,.40);
+      background:#fff;
       display:inline-block;
       flex:0 0 auto;
     }
     .radio input:checked{
-      background:#fff;
-      border-color:#fff;
+      background:var(--brand);
+      border-color:var(--brand);
     }
     .radio input:focus-visible{
-      outline:2px solid rgba(255,255,255,.30);
+      outline:2px solid rgba(74,77,85,.35);
       outline-offset:2px;
     }
     .form-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; text-align:left; margin-top:4px }
-    .form-grid label{ display:flex; flex-direction:column; gap:8px; font-size:14px; font-weight:var(--fw); color:rgba(238,242,255,.92) }
+    .form-grid label{ display:flex; flex-direction:column; gap:8px; font-size:var(--fs-base); font-weight:var(--fw); color:var(--text) }
     .form-grid input, .form-grid select{
       width:100%;
       font:inherit;
       font-weight:var(--fw);
       padding:12px 12px;
       border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(8,11,22,.78);
-      color:var(--text);
+      border:1px solid var(--border2);
+      background:#ffffff;
+      color:var(--textStrong);
       outline:none;
-      box-shadow:0 1px 0 rgba(255,255,255,.05) inset;
+      box-shadow:0 1px 0 rgba(0,0,0,.04) inset;
     }
     .form-grid select{
       -webkit-appearance:none;
       appearance:none;
       padding-right:44px;
       cursor:pointer;
-      color-scheme: dark;
+      color-scheme: light;
       background-image:
-        linear-gradient(45deg, transparent 50%, rgba(238,242,255,.72) 50%),
-        linear-gradient(135deg, rgba(238,242,255,.72) 50%, transparent 50%),
-        linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0));
+        linear-gradient(45deg, transparent 50%, rgba(0,0,0,.55) 50%),
+        linear-gradient(135deg, rgba(0,0,0,.55) 50%, transparent 50%),
+        linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,0));
       background-position:
         calc(100% - 18px) 50%,
         calc(100% - 12px) 50%,
@@ -367,76 +336,84 @@
         6px 6px,
         1px 22px;
       background-repeat:no-repeat;
+      background-color:#ffffff;
     }
-    .form-grid select:hover{ border-color:rgba(255,255,255,.20) }
-    .form-grid input::placeholder{ color:rgba(238,242,255,.45) }
-    .form-grid input:focus, .form-grid select:focus{ border-color:rgba(76,125,255,.55); box-shadow:0 0 0 4px rgba(76,125,255,.18) }
+    .form-grid select:hover{ border-color:rgba(0,0,0,.32) }
+    .form-grid input::placeholder{ color:rgba(40,40,46,.38) }
+    .form-grid input:focus, .form-grid select:focus{ border-color:rgba(74,77,85,.70); box-shadow:0 0 0 4px rgba(74,77,85,.14) }
     #stepManual .form-grid input.manual-serving{
-      background:rgba(56, 28, 32, .82);
-      border-color:rgba(255, 120, 128, .22);
+      background:#e6dcdc;
+      border-color:rgba(90,72,72,.45);
+      color:#3a2a2a;
     }
     #stepManual .form-grid input.manual-serving:focus{
-      border-color:rgba(255, 120, 128, .55);
-      box-shadow:0 0 0 4px rgba(255, 120, 128, .16);
+      border-color:rgba(90,72,72,.85);
+      box-shadow:0 0 0 4px rgba(90,72,72,.16);
     }
     #stepPortions #proteinPowderG,
     #stepPortions #proteinPowderProteinPerG,
     #stepManual .form-grid input.protein-powder,
     #stepManual .form-grid input.protein-powder-perg{
-      background:rgba(33, 52, 44, .86);
-      border-color:rgba(159, 201, 151, .22);
+      background:#dde2dc;
+      border-color:rgba(72,85,72,.45);
+      color:#2a3a2a;
     }
     #stepPortions #proteinPowderG:focus,
     #stepPortions #proteinPowderProteinPerG:focus,
     #stepManual .form-grid input.protein-powder:focus,
     #stepManual .form-grid input.protein-powder-perg:focus{
-      border-color:rgba(159, 201, 151, .55);
-      box-shadow:0 0 0 4px rgba(159, 201, 151, .16);
+      border-color:rgba(72,85,72,.85);
+      box-shadow:0 0 0 4px rgba(72,85,72,.16);
     }
     #adjustPortionsManually{
-      border:1px solid rgba(255, 120, 128, .22);
-      background:rgba(56, 28, 32, .72);
+      border:1px solid rgba(90,72,72,.45);
+      background:#e6dcdc;
+      color:#3a2a2a;
     }
     #adjustPortionsManually:hover{
-      border-color:rgba(255, 120, 128, .32);
-      background:rgba(56, 28, 32, .82);
+      border-color:rgba(90,72,72,.70);
+      background:#d9cbcb;
     }
     #manualEstimate{
-      border:1px solid rgba(215,200,146,.22);
-      background:rgba(47, 46, 30, .72);
+      border:1px solid rgba(0,0,0,.22);
+      background:#f5f6f8;
+      color:var(--textStrong);
     }
     #manualEstimate:hover{
-      border-color:rgba(215,200,146,.32);
-      background:rgba(47, 46, 30, .82);
+      border-color:rgba(0,0,0,.45);
+      background:#eaecef;
     }
     #updatePortions{
-      border:1px solid rgba(215,200,146,.22);
-      background:rgba(47, 46, 30, .72);
+      border:1px solid rgba(0,0,0,.22);
+      background:#f5f6f8;
+      color:var(--textStrong);
     }
     #updatePortions:hover{
-      border-color:rgba(215,200,146,.32);
-      background:rgba(47, 46, 30, .82);
+      border-color:rgba(0,0,0,.45);
+      background:#eaecef;
     }
     #updateSupplements{
-      border:1px solid rgba(215,200,146,.22);
-      background:rgba(47, 46, 30, .72);
+      border:1px solid rgba(0,0,0,.22);
+      background:#f5f6f8;
+      color:var(--textStrong);
     }
     #updateSupplements:hover{
-      border-color:rgba(215,200,146,.32);
-      background:rgba(47, 46, 30, .82);
+      border-color:rgba(0,0,0,.45);
+      background:#eaecef;
     }
     #supplementsList .supplement-item input{
-      background:rgba(21, 31, 46, .86);
-      border-color:rgba(126, 157, 214, .22);
+      background:#dde0e6;
+      border-color:rgba(72,78,92,.45);
+      color:#2a303c;
     }
     #supplementsList .supplement-item input:focus{
-      border-color:rgba(126, 157, 214, .55);
-      box-shadow:0 0 0 4px rgba(126, 157, 214, .16);
+      border-color:rgba(72,78,92,.85);
+      box-shadow:0 0 0 4px rgba(72,78,92,.16);
     }
     #supplementsList .supplement-item + .supplement-item{
       margin-top:12px;
       padding-top:12px;
-      border-top:1px dashed rgba(126, 157, 214, .28);
+      border-top:1px dashed rgba(72,78,92,.40);
     }
     #supplementsList label.supp-serv .supp-serv-row{
       display:flex;
@@ -450,47 +427,72 @@
     #supplementsList .supp-del{
       padding:10px 12px;
       border-radius:12px;
-      border:1px solid rgba(255, 77, 79, .28);
-      background:rgba(56, 28, 32, .62);
-      color:rgba(255, 220, 220, .92);
+      border:1px solid rgba(90,72,72,.45);
+      background:#e6dcdc;
+      color:#3a2a2a;
       font-weight:var(--fw);
       cursor:pointer;
       transition:transform .06s ease, background .2s ease, border-color .2s ease;
       white-space:nowrap;
     }
     #supplementsList .supp-del:hover{
-      border-color:rgba(255, 77, 79, .42);
-      background:rgba(56, 28, 32, .78);
+      border-color:rgba(90,72,72,.75);
+      background:#d9cbcb;
     }
     #supplementsList .supp-del:active{ transform:translateY(1px) }
     .supp-actions-divider{
       margin-top:12px;
-      border-top:1px dashed rgba(126, 157, 214, .28);
+      border-top:1px dashed rgba(72,78,92,.40);
     }
     .supp-actions-hint{
       margin-top:8px;
       text-align:center;
-      color:#8b7d2d;
+      color:var(--muted);
       font-weight:var(--fw);
       font-size:var(--fs-sm);
     }
     #stepManual .form-grid input.manual-supp-serving{
-      background:rgba(21, 31, 46, .86);
-      border-color:rgba(126, 157, 214, .22);
+      background:#dde0e6;
+      border-color:rgba(72,78,92,.45);
+      color:#2a303c;
     }
     #stepManual .form-grid input.manual-supp-serving:focus{
-      border-color:rgba(126, 157, 214, .55);
-      box-shadow:0 0 0 4px rgba(126, 157, 214, .16);
+      border-color:rgba(72,78,92,.85);
+      box-shadow:0 0 0 4px rgba(72,78,92,.16);
     }
     .section{ display:none }
     .section.active{ display:block }
+    .cunningham-fields{
+      margin-top:14px;
+      padding:14px 14px;
+      border:1px dashed rgba(72,85,72,.55);
+      border-radius:12px;
+      background:rgba(72,85,72,.06);
+    }
+    .cunningham-hint{
+      margin-bottom:10px;
+      font-size:var(--fs-sm);
+      color:#2a3a2a;
+      font-weight:var(--fw);
+      line-height:1.55;
+    }
+    .cunningham-fields .form-grid input{
+      background:#dde2dc;
+      border-color:rgba(72,85,72,.45);
+      color:#2a3a2a;
+    }
+    .cunningham-fields .form-grid input:focus{
+      border-color:rgba(72,85,72,.85);
+      box-shadow:0 0 0 4px rgba(72,85,72,.16);
+    }
     .btn-row{ display:flex; gap:10px; margin-top:18px }
     .btn{
       padding:12px 16px;
       border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
+      border:1px solid var(--border2);
+      background:#ffffff;
       color:var(--text);
+      font-size:var(--fs-base);
       font-weight:var(--fw);
       cursor:pointer;
       transition:transform .06s ease, background .2s ease, border-color .2s ease;
@@ -502,23 +504,24 @@
       transform:none;
       box-shadow:none;
     }
-    .btn:hover{ background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.20) }
+    .btn:hover{ background:var(--paperSoft); border-color:rgba(0,0,0,.32) }
     .btn:active{ transform:translateY(1px) }
     .btn.primary{
       border:0;
       background:linear-gradient(180deg, var(--brand2), var(--brand));
-      box-shadow:0 10px 24px rgba(58,74,104,.28);
+      color:var(--brandInk);
+      box-shadow:0 10px 20px rgba(74,77,85,.22);
     }
-    .btn.primary:hover{ filter:brightness(1.03) }
+    .btn.primary:hover{ filter:brightness(1.12); background:linear-gradient(180deg, var(--brand2), var(--brand)) }
     .review{
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.10);
+      background:var(--paperSoft);
+      border:1px solid var(--border);
       border-radius:14px;
       padding:12px 12px;
     }
-    .review .k{ color:rgba(238,242,255,.62); font-size:var(--fs-sm); font-weight:var(--fw); letter-spacing:.06em; text-transform:uppercase }
-    .review .v{ font-size:var(--fs-sm); font-weight:var(--fw); margin-top:6px; color:rgba(238,242,255,.92) }
-    .review pre{ margin:10px 0 0; white-space:pre-wrap; word-break:break-word; font-size:var(--fs-sm); line-height:1.6; color:rgba(238,242,255,.92) }
+    .review .k{ color:var(--muted); font-size:var(--fs-sm); font-weight:var(--fw); letter-spacing:.06em; text-transform:uppercase }
+    .review .v{ font-size:var(--fs-sm); font-weight:var(--fw); margin-top:6px; color:var(--textStrong) }
+    .review pre{ margin:10px 0 0; white-space:pre-wrap; word-break:break-word; font-size:var(--fs-sm); line-height:1.6; color:var(--textStrong) }
     .macro-label{
       display:inline-flex;
       align-items:center;
@@ -528,99 +531,41 @@
       border-radius:999px;
       font-size:var(--fs-sm);
       font-weight:var(--fw);
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.18);
+      background:var(--paperSoft);
+      border:1px solid var(--border2);
+      color:var(--textStrong);
     }
-    #macroTotal, #macroTotalProfile{ margin-top:14px; margin-bottom:14px; font-size:var(--fs-base); font-weight:var(--fw); color:rgba(238,242,255,.88) }
-    #macroTotal.warn, #macroTotalProfile.warn{ color: rgba(170, 96, 96, .95) }
+    #macroTotal, #macroTotalProfile{ margin-top:14px; margin-bottom:14px; font-size:var(--fs-base); font-weight:var(--fw); color:var(--text) }
+    #macroTotal.warn, #macroTotalProfile.warn{ color: rgba(184, 90, 94, .95) }
     input[type="range"]{ width:100% }
 
     #toast{ position:fixed; top:calc(16px + env(safe-area-inset-top) + var(--vv-top, 0px)); right:calc(16px + env(safe-area-inset-right)); z-index:30; display:flex; flex-direction:column; gap:8px }
     .toast-msg{
       padding:10px 12px;
       border-radius:12px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(16,20,34,.72);
-      color:var(--text);
+      border:1px solid var(--border2);
+      background:rgba(255,255,255,.98);
+      color:var(--textStrong);
       font-weight:var(--fw);
-      font-size:14px;
-      box-shadow:0 12px 30px rgba(0,0,0,.45);
+      font-size:var(--fs-base);
+      box-shadow:0 12px 30px rgba(0,0,0,.12);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-    .toast-msg.error{ border-color:rgba(255,77,79,.55) }
-    .toast-msg.info{ border-color:rgba(76,125,255,.55) }
+    .toast-msg.error{ border-color:rgba(184,90,94,.65); color:#7a2b2e }
+    .toast-msg.info{ border-color:rgba(74,77,85,.55); color:var(--textStrong) }
 
-    #homeGetStarted{
-      position:fixed;
-      left:calc(14px + env(safe-area-inset-left));
-      bottom:calc(14px + env(safe-area-inset-bottom));
-      z-index:16;
-      width:auto;
-      min-width:200px;
-      flex:0 0 auto;
-      pointer-events:auto;
-      padding:14px 20px;
-      border-radius:999px;
-      font-size:15px;
-      letter-spacing:.02em;
-      position:fixed;
-      overflow:hidden;
-      box-shadow:
-        0 18px 44px rgba(0,0,0,.55),
-        0 0 0 1px rgba(255,255,255,.10) inset;
-    }
-    #homeGetStarted.btn.primary{
-      background:
-        radial-gradient(120% 140% at 20% 20%, rgba(255,255,255,.22), rgba(255,255,255,0) 52%),
-        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0) 48%),
-        linear-gradient(180deg, var(--brand2), var(--brand));
-      box-shadow:
-        0 22px 56px rgba(0,0,0,.56),
-        0 12px 28px rgba(58,74,104,.22),
-        0 0 0 1px rgba(255,255,255,.12) inset;
-      transition: transform .12s ease, filter .2s ease, box-shadow .2s ease;
-    }
-    #homeGetStarted::before{
-      content:"";
-      position:absolute;
-      inset:-40% -60%;
-      background:
-        radial-gradient(closest-side, rgba(255,255,255,.22), rgba(255,255,255,0) 68%);
-      transform: translate3d(-12%, -10%, 0) rotate(10deg);
-      pointer-events:none;
-    }
-    #homeGetStarted:hover{
-      transform: translateY(-1px);
-      filter: brightness(1.03);
-      box-shadow:
-        0 24px 62px rgba(0,0,0,.60),
-        0 0 0 1px rgba(255,255,255,.14) inset;
-    }
-    #homeGetStarted:active{
-      transform: translateY(0);
-    }
-    #homeGetStarted:focus-visible{
-      outline:none;
-      box-shadow:
-        0 22px 56px rgba(0,0,0,.56),
-        0 0 0 3px rgba(76,125,255,.38),
-        0 0 0 1px rgba(255,255,255,.14) inset;
-    }
-    @media (max-width: 520px){
-      #homeGetStarted{ min-width:220px; padding:15px 22px; font-size:16px }
-    }
     .field-note{
       display:inline-flex;
       align-items:center;
       margin-left:8px;
       padding:2px 8px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
+      border:1px solid var(--border2);
+      background:var(--paperSoft);
       font-size:var(--fs-xs);
       font-weight:var(--fw);
-      color:rgba(238,242,255,.78);
+      color:var(--muted);
       letter-spacing:.02em;
     }
     .macro-hint{
@@ -629,15 +574,15 @@
       font-size:var(--fs-sm);
       font-weight:var(--fw);
       text-align:center;
-      color:rgba(238,242,255,.72);
+      color:var(--muted);
     }
     .macro-ref{
       margin-top:0;
       font-size:var(--fs-sm);
       font-weight:var(--fw);
       text-align:center;
-      color:rgba(238,242,255,.66);
-      opacity:.9;
+      color:var(--muted);
+      opacity:.95;
       line-height:1.6;
     }
 
@@ -649,9 +594,9 @@
     .macro-lines{
       display:grid;
       gap:0;
-      font-size:12px;
+      font-size:var(--fs-base);
       font-weight:var(--fw);
-      color:rgba(238,242,255,.92);
+      color:var(--textStrong);
       line-height:1.6;
       font-variant-numeric:tabular-nums;
     }
@@ -666,9 +611,9 @@
       align-items:center;
     }
     .macro-bar-label{
-      color:rgba(238,242,255,.74);
+      color:var(--muted);
       font-weight:var(--fw);
-      font-size:12px;
+      font-size:var(--fs-base);
       text-align:left;
     }
     .stack-bar{
@@ -676,9 +621,9 @@
       display:flex;
       overflow:hidden;
       border-radius:999px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.06);
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+      border:1px solid var(--border2);
+      background:#ffffff;
+      box-shadow: inset 0 0 0 1px rgba(90,70,30,.06);
     }
     .stack-seg{ height:100% }
     .stack-seg.c{ background:#808000 }
@@ -689,30 +634,30 @@
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
-      color:rgba(238,242,255,.72);
+      color:var(--muted);
       font-weight:var(--fw);
-      font-size:12px;
+      font-size:var(--fs-base);
     }
     .macro-legend .item{ display:inline-flex; gap:6px; align-items:center }
     .macro-legend .swatch{
       width:10px;
       height:10px;
       border-radius:3px;
-      border:1px solid rgba(255,255,255,.22);
-      background:rgba(255,255,255,.06);
+      border:1px solid var(--border2);
+      background:#ffffff;
     }
     .macro-legend .swatch.c{ background:#808000 }
     .macro-legend .swatch.p{ background:#556b2f }
     .macro-legend .swatch.f{ background:#6b8f3f }
 
-    .tbl{ width:100%; border-collapse:collapse; margin-top:10px; font-size:12px }
-    .tbl th, .tbl td{ border-bottom:1px solid rgba(255,255,255,.08); padding:8px 6px; text-align:left; vertical-align:top }
-    .tbl th{ color:rgba(238,242,255,.72); font-weight:var(--fw); letter-spacing:.04em; text-transform:none }
+    .tbl{ width:100%; border-collapse:collapse; margin-top:10px; font-size:var(--fs-base); color:var(--textStrong) }
+    .tbl th, .tbl td{ border-bottom:1px solid rgba(0,0,0,.10); padding:8px 6px; text-align:left; vertical-align:top }
+    .tbl th{ color:var(--muted); font-weight:var(--fw); letter-spacing:.04em; text-transform:none }
     .tbl td.num{ text-align:right; font-variant-numeric:tabular-nums }
     .tbl-note{
       margin-top:10px;
       font-size:var(--fs-sm);
-      color:rgba(238,242,255,.70);
+      color:var(--muted);
       font-weight:var(--fw);
       line-height:1.6;
     }
@@ -729,17 +674,21 @@
     }
     .tbl tr:last-child td{ border-bottom:0 }
     .tbl tr.protein-powder-row td{
-      color:rgba(159, 201, 151, .92);
-      background:rgba(33, 52, 44, .22);
+      color:#2a3a2a;
+      background:rgba(72,85,72,.10);
+    }
+    .tbl tr.supplement-row td{
+      color:#2a303c;
+      background:rgba(72,78,92,.10);
     }
     @media (max-width: 520px){
       .form-grid input, .form-grid select{ min-height:46px; line-height:1.15; font-size:16px }
       #supplementsList input{ font-size:16px }
       #setup textarea{ font-size:16px }
       #breakdownTable{
-        --scrollTrack:#14131a;
-        --scrollThumb:#4a232a;
-        --scrollThumbHover:#62303a;
+        --scrollTrack:#eef0f3;
+        --scrollThumb:#c4c8cf;
+        --scrollThumbHover:#9aa0ab;
         max-width:100%;
         overflow-x:auto;
         overflow-y:hidden;
@@ -748,9 +697,9 @@
       }
       #breakdownTable .tbl{ min-width:560px }
       #manualBreakdownTable{
-        --scrollTrack:#14131a;
-        --scrollThumb:#4a232a;
-        --scrollThumbHover:#62303a;
+        --scrollTrack:#eef0f3;
+        --scrollThumb:#c4c8cf;
+        --scrollThumbHover:#9aa0ab;
         max-width:100%;
         overflow-x:auto;
         overflow-y:hidden;
@@ -784,20 +733,18 @@
         </div>
       </div>
       <div id="stepHome" class="section">
-        <div class="home-splash">
-          <div class="home-left">
-            <div class="home-title-stack">
-              <div class="home-title zh">六大類食物份數規劃</div>
-              <div class="home-title en">Six Food Groups Servings Planner</div>
-            </div>
-          </div>
-          <div class="home-right">
-            <div class="lang-card">
-              <div class="lang-actions">
-                <button class="btn primary" id="chooseZh" type="button">中文</button>
-                <button class="btn" id="chooseEn" type="button">English</button>
-              </div>
-            </div>
+        <div class="home-journal">
+          <img class="home-logo" src="logo.png" alt="Precision Nutrition Logo" width="140" height="153">
+          <div class="home-eyebrow">Precision Nutrition</div>
+          <h1 class="home-title-zh">六大類食物份數規劃</h1>
+          <div class="home-title-en">Six Food Groups Servings Planner</div>
+          <div class="home-rule" aria-hidden="true"></div>
+          <p class="home-lede">
+            <span class="lede-en">Plan daily servings from macros — in seconds.</span>
+          </p>
+          <div class="home-lang">
+            <button class="btn primary lang-btn" id="chooseZh" type="button">中文</button>
+            <button class="btn lang-btn" id="chooseEn" type="button">English</button>
           </div>
         </div>
       </div>
@@ -827,6 +774,13 @@
         </div>
         <div id="profileSection" class="section">
           <div class="form-grid">
+            <label><span data-i18n="field.formula">Energy Formula</span>
+              <select id="formula">
+                <option value="hb" selected data-i18n="opt.formula.hb">Harris-Benedict</option>
+                <option value="mifflin" data-i18n="opt.formula.mifflin">Mifflin-St Jeor</option>
+                <option value="cunningham" data-i18n="opt.formula.cunningham">Cunningham (for athletes)</option>
+              </select>
+            </label>
             <label><span data-i18n="field.age">Age</span><input id="age" type="number" min="1" value="25" placeholder="years" data-i18n-placeholder="ph.years"></label>
             <label><span data-i18n="field.sex">Sex</span><select id="sex"><option value="male" data-i18n="opt.male">Male</option><option value="female" data-i18n="opt.female">Female</option></select></label>
             <label><span data-i18n="field.heightCm">Height (cm)</span><input id="height" type="number" min="50" value="170" placeholder="centimeters" data-i18n-placeholder="ph.cm"></label>
@@ -848,6 +802,13 @@
               </select>
               <input id="stressValue" type="number" step="0.01" style="margin-left:8px; width:120px; display:none" placeholder="Enter value" data-i18n-placeholder="ph.enterValue">
             </label>
+          </div>
+          <div id="cunninghamFields" class="cunningham-fields" style="display:none">
+            <div class="cunningham-hint" data-i18n="hint.cunningham">Cunningham uses lean body mass (LBM). Enter either LBM (kg) or Body Fat (%) — if both are given, LBM takes priority.</div>
+            <div class="form-grid">
+              <label><span data-i18n="field.lbmKg">Lean Body Mass (kg)</span><input id="lbmKg" type="number" min="0" step="0.1" placeholder="e.g. 55" data-i18n-placeholder="ph.lbm"></label>
+              <label><span data-i18n="field.bodyFatPct">Body Fat (%)</span><input id="bodyFatPct" type="number" min="0" max="80" step="0.1" placeholder="e.g. 18" data-i18n-placeholder="ph.bodyFat"></label>
+            </div>
           </div>
         </div>
         <div class="btn-row">
@@ -1011,6 +972,10 @@
     const activityEl = document.getElementById('activity')
     const stressEl = document.getElementById('stress')
     const stressValueEl = document.getElementById('stressValue')
+    const formulaEl = document.getElementById('formula')
+    const lbmKgEl = document.getElementById('lbmKg')
+    const bodyFatPctEl = document.getElementById('bodyFatPct')
+    const cunninghamFieldsEl = document.getElementById('cunninghamFields')
     const macroProteinEl = document.getElementById('macroProtein')
     const macroFatEl = document.getElementById('macroFat')
     const macroCarbEl = document.getElementById('macroCarb')
@@ -1072,12 +1037,21 @@
         'field.weightKg': 'Weight (kg)',
         'field.activity': 'Activity Factor',
         'field.stress': 'Stress Factor',
+        'field.formula': 'Energy Formula',
+        'field.lbmKg': 'Lean Body Mass (kg)',
+        'field.bodyFatPct': 'Body Fat (%)',
         'field.proteinPowderG': 'Protein powder (g/day)',
         'field.proteinPowderPerG': 'Protein per 1g powder (g)',
+        'opt.formula.hb': 'Harris-Benedict',
+        'opt.formula.mifflin': 'Mifflin-St Jeor',
+        'opt.formula.cunningham': 'Cunningham (for athletes)',
+        'hint.cunningham': 'Cunningham uses lean body mass (LBM). Enter either LBM (kg) or Body Fat (%) — if both are given, LBM takes priority.',
         'ph.eg1800': 'e.g. 1800',
         'ph.years': 'years',
         'ph.cm': 'centimeters',
         'ph.kg': 'kilograms',
+        'ph.lbm': 'e.g. 55',
+        'ph.bodyFat': 'e.g. 18',
         'ph.enterValue': 'Enter value',
         'opt.male': 'Male',
         'opt.female': 'Female',
@@ -1165,6 +1139,7 @@
         'toast.suppFillAllFields': 'Please fill out all supplement fields before adding a new item.',
         'toast.manualServingRoundedOne': 'Note: Servings must be in 0.5 increments. {item} was rounded to {value}.',
         'toast.manualServingRoundedMany': 'Note: Servings must be in 0.5 increments. The following were rounded: {items}.',
+        'toast.cunninghamNeedLbm': 'Cunningham requires LBM. Please enter Lean Body Mass (kg) or Body Fat (%) to continue.',
       },
       'zh-Hant': {
         'app.title': '六大類食物份數規劃',
@@ -1191,12 +1166,21 @@
         'field.weightKg': '體重（kg）',
         'field.activity': '活動係數',
         'field.stress': '壓力係數',
+        'field.formula': '熱量公式',
+        'field.lbmKg': '瘦體組織 LBM（kg）',
+        'field.bodyFatPct': '體脂率（%）',
         'field.proteinPowderG': '蛋白粉（g/天）',
         'field.proteinPowderPerG': '每 1g 蛋白粉含蛋白質（g）',
+        'opt.formula.hb': 'Harris-Benedict',
+        'opt.formula.mifflin': 'Mifflin-St Jeor',
+        'opt.formula.cunningham': 'Cunningham（運動員）',
+        'hint.cunningham': 'Cunningham 公式需要 LBM。請填入 LBM 或體脂率其中之一即可；若兩者皆填則以 LBM 為準。',
         'ph.eg1800': '例如 1800',
         'ph.years': '歲',
         'ph.cm': '公分',
         'ph.kg': '公斤',
+        'ph.lbm': '例如 55',
+        'ph.bodyFat': '例如 18',
         'ph.enterValue': '輸入數值',
         'opt.male': '男',
         'opt.female': '女',
@@ -1284,6 +1268,7 @@
         'toast.suppFillAllFields': '請先填完營養補充品的所有欄位，才能新增項目。',
         'toast.manualServingRoundedOne': '提醒：份數只能以 0.5 份為單位。{item} 份數已自動四捨五入為 {value} 份。',
         'toast.manualServingRoundedMany': '提醒：份數只能以 0.5 份為單位。以下類別份數已自動四捨五入：{items}。',
+        'toast.cunninghamNeedLbm': '使用 Cunningham 公式請先填入 LBM 或體脂率才能繼續。',
       }
     }
     let currentLang = 'en'
@@ -1385,6 +1370,9 @@
           activity: activityEl ? String(activityEl.value ?? '') : '',
           stress: stressEl ? String(stressEl.value ?? '') : '',
           stressValue: stressValueEl ? String(stressValueEl.value ?? '') : '',
+          formula: formulaEl ? String(formulaEl.value ?? '') : '',
+          lbmKg: lbmKgEl ? String(lbmKgEl.value ?? '') : '',
+          bodyFatPct: bodyFatPctEl ? String(bodyFatPctEl.value ?? '') : '',
           macroModeProfile,
           macroProteinProfile: macroProteinProfileEl ? String(macroProteinProfileEl.value ?? '') : '',
           macroFatProfile: macroFatProfileEl ? String(macroFatProfileEl.value ?? '') : '',
@@ -1439,6 +1427,10 @@
       if (stressEl && typeof ui.stress === 'string') stressEl.value = ui.stress
       if (stressValueEl && typeof ui.stressValue === 'string') stressValueEl.value = ui.stressValue
       try { updateStressUI && updateStressUI() } catch {}
+      if (formulaEl && typeof ui.formula === 'string' && ui.formula) formulaEl.value = ui.formula
+      if (lbmKgEl && typeof ui.lbmKg === 'string') lbmKgEl.value = ui.lbmKg
+      if (bodyFatPctEl && typeof ui.bodyFatPct === 'string') bodyFatPctEl.value = ui.bodyFatPct
+      try { updateFormulaUI && updateFormulaUI() } catch {}
 
       setRadio('macroModeProfile', ui.macroModeProfile || 'auto')
       if (macroProteinProfileEl && typeof ui.macroProteinProfile === 'string') macroProteinProfileEl.value = ui.macroProteinProfile
@@ -1497,6 +1489,10 @@
       if (stressEl) stressEl.value = '1.0'
       if (stressValueEl) stressValueEl.value = ''
       try { updateStressUI && updateStressUI() } catch {}
+      if (formulaEl) formulaEl.value = 'hb'
+      if (lbmKgEl) lbmKgEl.value = ''
+      if (bodyFatPctEl) bodyFatPctEl.value = ''
+      try { updateFormulaUI && updateFormulaUI() } catch {}
 
       setRadio('macroModeProfile', 'auto')
       if (macroProteinProfileEl) macroProteinProfileEl.value = '20'
@@ -1614,11 +1610,36 @@
       const res = Object.fromEntries(out.map(x => [x.k, x.v]))
       return { pPct: res.p, fPct: res.f, cPct: res.c }
     }
-    function computeEnergy(sex, age, heightCm, weightKg, activity, stress){
-      const BEE = sex === 'male'
+    function computeBEE(sex, age, heightCm, weightKg, formula, lbmKg){
+      const f = String(formula || 'hb')
+      if (f === 'mifflin'){
+        return sex === 'male'
+          ? 10*weightKg + 6.25*heightCm - 5*age + 5
+          : 10*weightKg + 6.25*heightCm - 5*age - 161
+      }
+      if (f === 'cunningham'){
+        const lbm = isFinite(+lbmKg) ? Math.max(0, +lbmKg) : 0
+        return 500 + 22 * lbm
+      }
+      return sex === 'male'
         ? 66 + 13.7*weightKg + 5*heightCm - 6.8*age
         : 655 + 9.6*weightKg + 1.8*heightCm - 4.7*age
-      return BEE * activity * stress
+    }
+    function computeEnergy(sex, age, heightCm, weightKg, activity, stress, formula, lbmKg){
+      return computeBEE(sex, age, heightCm, weightKg, formula, lbmKg) * activity * stress
+    }
+    function resolveLbmFromInputs(weightKg){
+      const lbmDirect = parseFloat(lbmKgEl?.value)
+      const bfPct = parseFloat(bodyFatPctEl?.value)
+      if (isFinite(lbmDirect) && lbmDirect > 0) return { lbm: lbmDirect, source: 'lbm' }
+      if (isFinite(bfPct) && bfPct >= 0 && bfPct < 80 && isFinite(+weightKg) && +weightKg > 0){
+        return { lbm: (+weightKg) * (1 - bfPct / 100), source: 'bfPct', bfPct }
+      }
+      return { lbm: null, source: null }
+    }
+    function updateFormulaUI(){
+      const f = (formulaEl && formulaEl.value) || 'hb'
+      if (cunninghamFieldsEl) cunninghamFieldsEl.style.display = (f === 'cunningham') ? 'block' : 'none'
     }
     function computeTargetsTaiwan(kcal, macroOverride, macroSource, external){
       const baseKcalInput = Math.max(0, isFinite(+kcal) ? +kcal : 0)
@@ -3212,17 +3233,40 @@
       }
       pending.supplements = list
     }
-    function buildEnergyFormulaText({ sex, age, height, weight, activity, stress, bee, kcal }){
-      if (currentLang === 'zh-Hant'){
-        const base = sex === 'male'
-          ? `BEE = 66 + 13.7×體重 + 5×身高 − 6.8×年齡\n= 66 + 13.7×${weight} + 5×${height} − 6.8×${age}\n= ${bee.toFixed(1)}`
-          : `BEE = 655 + 9.6×體重 + 1.8×身高 − 4.7×年齡\n= 655 + 9.6×${weight} + 1.8×${height} − 4.7×${age}\n= ${bee.toFixed(1)}`
-        return `${base}\n\n總熱量 = BEE × 活動係數 × 壓力係數\n= ${bee.toFixed(1)} × ${activity} × ${stress}\n= ${kcal.toFixed(1)} kcal`
+    function buildEnergyFormulaText({ sex, age, height, weight, activity, stress, bee, kcal, formula, lbmKg, lbmSource, bfPctUsed }){
+      const zh = currentLang === 'zh-Hant'
+      const f = String(formula || 'hb')
+      const L_weight = zh ? '體重' : 'Weight'
+      const L_height = zh ? '身高' : 'Height'
+      const L_age = zh ? '年齡' : 'Age'
+      const L_total = zh ? '總熱量' : 'Total Energy'
+      const L_act = zh ? '活動係數' : 'Activity'
+      const L_stress = zh ? '壓力係數' : 'Stress'
+      const L_formulaName = zh
+        ? { hb:'Harris-Benedict', mifflin:'Mifflin-St Jeor', cunningham:'Cunningham（運動員）' }[f] || f
+        : { hb:'Harris-Benedict', mifflin:'Mifflin-St Jeor', cunningham:'Cunningham (for athletes)' }[f] || f
+      const header = `${zh ? '公式' : 'Formula'}: ${L_formulaName}`
+      let base
+      let baseLabel = 'BEE'
+      if (f === 'mifflin'){
+        base = sex === 'male'
+          ? `BEE = 10×${L_weight} + 6.25×${L_height} − 5×${L_age} + 5\n= 10×${weight} + 6.25×${height} − 5×${age} + 5\n= ${bee.toFixed(1)}`
+          : `BEE = 10×${L_weight} + 6.25×${L_height} − 5×${L_age} − 161\n= 10×${weight} + 6.25×${height} − 5×${age} − 161\n= ${bee.toFixed(1)}`
+      } else if (f === 'cunningham'){
+        baseLabel = 'REE'
+        const lbm = isFinite(+lbmKg) ? +lbmKg : 0
+        const lbmLine = (lbmSource === 'bfPct' && isFinite(+bfPctUsed))
+          ? (zh
+              ? `LBM = ${L_weight} × (1 − 體脂率/100) = ${weight} × (1 − ${bfPctUsed}/100) = ${lbm.toFixed(1)} kg\n`
+              : `LBM = ${L_weight} × (1 − BF%/100) = ${weight} × (1 − ${bfPctUsed}/100) = ${lbm.toFixed(1)} kg\n`)
+          : `LBM = ${lbm.toFixed(1)} kg\n`
+        base = `${lbmLine}REE = 500 + 22×LBM\n= 500 + 22×${lbm.toFixed(1)}\n= ${bee.toFixed(1)}`
+      } else {
+        base = sex === 'male'
+          ? `BEE = 66 + 13.7×${L_weight} + 5×${L_height} − 6.8×${L_age}\n= 66 + 13.7×${weight} + 5×${height} − 6.8×${age}\n= ${bee.toFixed(1)}`
+          : `BEE = 655 + 9.6×${L_weight} + 1.8×${L_height} − 4.7×${L_age}\n= 655 + 9.6×${weight} + 1.8×${height} − 4.7×${age}\n= ${bee.toFixed(1)}`
       }
-      const base = sex === 'male'
-        ? `BEE = 66 + 13.7×Weight + 5×Height − 6.8×Age\n= 66 + 13.7×${weight} + 5×${height} − 6.8×${age}\n= ${bee.toFixed(1)}`
-        : `BEE = 655 + 9.6×Weight + 1.8×Height − 4.7×Age\n= 655 + 9.6×${weight} + 1.8×${height} − 4.7×${age}\n= ${bee.toFixed(1)}`
-      return `${base}\n\nTotal Energy = BEE × Activity × Stress\n= ${bee.toFixed(1)} × ${activity} × ${stress}\n= ${kcal.toFixed(1)} kcal`
+      return `${header}\n${base}\n\n${L_total} = ${baseLabel} × ${L_act} × ${L_stress}\n= ${bee.toFixed(1)} × ${activity} × ${stress}\n= ${kcal.toFixed(1)} kcal`
     }
     modeInputs().forEach(i=> i.addEventListener('change', updateModeUI))
     updateModeUI()
@@ -3243,6 +3287,13 @@
     })
     stressEl.addEventListener('change', updateStressUI)
     updateStressUI()
+    if (formulaEl){
+      formulaEl.addEventListener('change', () => {
+        try { updateFormulaUI() } catch {}
+        try { saveAppState && saveAppState(currentLang) } catch {}
+      })
+    }
+    try { updateFormulaUI() } catch {}
     function handleNextFromInput(){
       const age = +ageEl.value
       const sex = sexEl.value
@@ -3316,14 +3367,26 @@
       if (age2 !== age || height2 !== height || weight2 !== weight){
         showToast(t('toast.profileInvalid'),'info')
       }
-      const bee = sex === 'male'
-        ? 66 + 13.7*weight2 + 5*height2 - 6.8*age2
-        : 655 + 9.6*weight2 + 1.8*height2 - 4.7*age2
+      const formula = (formulaEl && formulaEl.value) || 'hb'
+      let lbmKg = null
+      let lbmSource = null
+      let bfPctUsed = null
+      if (formula === 'cunningham'){
+        const res = resolveLbmFromInputs(weight2)
+        if (!res.lbm || !(res.lbm > 0)){
+          showToast(t('toast.cunninghamNeedLbm'), 'error', 3800)
+          return
+        }
+        lbmKg = res.lbm
+        lbmSource = res.source
+        bfPctUsed = (res.source === 'bfPct') ? res.bfPct : null
+      }
+      const bee = computeBEE(sex, age2, height2, weight2, formula, lbmKg)
       const kcal = bee * activity * stress
       pending.kcal = kcal
       pending.energyLabelType = 'estimated'
       pending.energyLabel = t('energyLabel.estimated')
-      pending.formulaArgs = { sex, age: age2, height: height2, weight: weight2, activity, stress, bee, kcal }
+      pending.formulaArgs = { sex, age: age2, height: height2, weight: weight2, activity, stress, bee, kcal, formula, lbmKg, lbmSource, bfPctUsed }
       pending.formulaText = buildEnergyFormulaText(pending.formulaArgs)
       energyReviewValueEl.textContent = `${pending.energyLabel}: ${formatKcal(pending.energyLabel, pending.kcal)} kcal`
       energyFormulaEl.textContent = pending.formulaText
